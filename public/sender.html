@@ -414,7 +414,14 @@
 
     <script>
         // Configuration
-         const SERVER_URL = 'http://192.168.53.81:3700';
+        // Dynamically construct the server URL from the current page location
+        const getServerUrl = () => {
+            const protocol = window.location.protocol;
+            const hostname = window.location.hostname;
+            const port = window.location.port ? `:${window.location.port}` : '';
+            return `${protocol}//${hostname}${port}`;
+        };
+        const SERVER_URL = getServerUrl();
 
 
         // State

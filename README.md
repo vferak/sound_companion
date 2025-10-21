@@ -5,6 +5,7 @@ To install dependencies:
 ```bash
 bun install
 ```
+It will run on port 3700
 
 To start a development server:
 
