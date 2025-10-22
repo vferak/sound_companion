@@ -244,6 +244,41 @@
             color: #718096;
             text-align: center;
         }
+
+        .button-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        button:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body>
@@ -256,6 +291,11 @@
         <div class="status-container">
             <div id="statusIndicator" class="status-indicator disconnected"></div>
             <div id="statusText" class="status-text disconnected">Disconnected</div>
+        </div>
+
+        <div class="button-container">
+            <button id="connectBtn" onclick="connect()">Connect</button>
+            <button id="disconnectBtn" onclick="disconnect()" disabled>Disconnect</button>
         </div>
 
         <div class="player-container">
@@ -346,6 +386,7 @@
                     updateStatus('connected');
                     addMessage('Connected successfully');
                     reconnectInfo.style.display = 'none';
+                    updateButtonStates();
 
                     if (reconnectTimeout) {
                         clearTimeout(reconnectTimeout);
@@ -385,9 +426,9 @@
                     updateStatus('disconnected');
                     addMessage('Disconnected from server');
                     ws = null;
+                    updateButtonStates();
 
-                    // Auto-reconnect
-                    scheduleReconnect();
+                    // Do not auto-reconnect - user must click Connect button
                 };
             } catch (error) {
                 console.error('Failed to connect:', error);
@@ -397,16 +438,7 @@
             }
         }
 
-        function scheduleReconnect() {
-            if (reconnectTimeout) return;
 
-            reconnectInfo.style.display = 'block';
-            reconnectTimeout = setTimeout(() => {
-                reconn
-ectTimeout = null;
-                connect();
-            }, RECONNECT_DELAY);
-        }
 
         function updateStatus(status) {
             statusIndicator.className = `status-indicator ${status}`;
@@ -492,8 +524,36 @@ ectTimeout = null;
         // Initialize on page load
         window.addEventListener('load', () => {
             console.log('Initializing Sound Companion...');
-            connect();
+            updateButtonStates();
         });
+
+        function updateButtonStates() {
+            const connectBtn = document.getElementById('connectBtn');
+            const disconnectBtn = document.getElementById('disconnectBtn');
+
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                connectBtn.disabled = true;
+                disconnectBtn.disabled = false;
+            } else {
+                connectBtn.disabled = false;
+                disconnectBtn.disabled = true;
+            }
+        }
+
+        function disconnect() {
+            if (ws) {
+                ws.close();
+                ws = null;
+            }
+            if (reconnectTimeout) {
+                clearTimeout(reconnectTimeout);
+                reconnectTimeout = null;
+            }
+            updateStatus('disconnected');
+            reconnectInfo.style.display = 'none';
+            addMessage('Manually disconnected from server');
+            updateButtonStates();
+        }
 
         // Clean up on page unload
         window.addEventListener('beforeunload', () => {
