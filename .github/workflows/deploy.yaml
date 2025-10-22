@@ -37,7 +37,7 @@ jobs:
             --release dev
             --reg-username $HARBOR_USERNAME 
             --reg-password env:HARBOR_PASSWORD
-            --image-name prorocketeers/rocketorb 
+            --image-name prorocketeers/challenger-soundboard 
             --registry harbor.intra.prorocketeers.com
 
       - name: Deploy
@@ -50,5 +50,5 @@ jobs:
             deploy
             --tag ${{ github.sha }}
             --token ${{ secrets.ARGO_TRIGGER_TOKEN }}
-            --values-file "rocketorb/dev/values.yaml"
+            --values-file "challenger-soundboard/dev/values.yaml"
             --repo "argo-repo-production"
