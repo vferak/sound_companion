@@ -358,18 +358,49 @@
         const RECONNECT_DELAY = 3000; // 3 seconds
         const MAX_MESSAGES = 10;
 
-        // Sound definitions (simplified version of jolanda-definition.ts)
-        const soundDefinitions = {
-            jolanda: {
-                rootUrl: 'https://media.soundboardio.com/jolanda/',
-                name: 'Jolanda'
-            },
-            lakatos: {
-                rootUrl: 'https://raw.githubusercontent.com/soundboardio/soundboardio-lakatos/master/sounds/',
-                name: 'Lakatos'
+        // Sound definitions (will be loaded from REST API)
+        let soundDefinitions = {};
+
+        // Function to load sound definitions from the REST API
+        async function loadSoundDefinitions() {
+            try {
+                const baseUrl = window.location.origin;
+                const response = await fetch(`${baseUrl}/sound-definitions`);
+
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch sound definitions: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.success && data.definitions) {
+                    // Transform the definitions to have the required rootUrl and name properties
+                    soundDefinitions = {};
+
+                    Object.entries(data.definitions).forEach(([key, definition]) => {
+                        if (definition.rootUrl && definition.name) {
+                            soundDefinitions[key] = {
+                                rootUrl: definition.rootUrl,
+                                name: definition.name,
+                                tiles: definition.tiles || []
+                            };
+                            console.log(`Loaded sound definition: ${key} (${definition.name})`);
+                        }
+                    });
+
+                    console.log('Successfully loaded sound definitions:', Object.keys(soundDefinitions));
+                    addMessage(`Loaded ${Object.keys(soundDefinitions).length} sound definition(s)`);
+                } else {
+                    throw new Error('Invalid response structure from sound-definitions API');
+                }
+            } catch (error) {
+                console.error('Failed to load sound definitions:', error);
+                addMessage(`Warning: Could not load sound definitions: ${error.message}`, true);
+
+                // Fallback to empty definitions - sounds won't play until they're loaded
+                soundDefinitions = {};
             }
-            // Add more sound categories here as needed
-        };
+        }
 
         // State
         let ws = null;
@@ -485,9 +516,9 @@
         async function playSound(category, filename) {
             const definition = soundDefinitions[category];
 
-            if (!definition) {
-                console.error(`Unknown sound category: ${category}`);
-                addMessage(`Unknown sound category: ${category}`, true);
+            if (!definition || !definition.rootUrl || !definition.name) {
+                console.error(`Invalid or missing sound definition for category: ${category}`);
+                addMessage(`Sound definition for "${category}" is not available`, true);
                 return;
             }
 
@@ -558,8 +589,9 @@
         }
 
         // Initialize on page load
-        window.addEventListener('load', () => {
+        window.addEventListener('load', async () => {
             console.log('Initializing Sound Companion...');
+            await loadSoundDefinitions();
             updateButtonStates();
         });
 

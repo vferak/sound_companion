@@ -9,6 +9,8 @@ import {
 } from "./websocket"
 import { jolandaDefinition } from "./jolanda-definition"
 import { lakatosDefinition } from "./lakatos-definition"
+import { myInstantsDefinition } from "./myInstants"
+import { theChatWheelDefinition } from "./theChatWheel"
 
 const packageJson = require("../package.json")
 
@@ -291,25 +293,13 @@ export const rest = new Elysia()
 
         const definitions = {
             jolanda: jolandaDefinition,
-            lakatos: lakatosDefinition
+            lakatos: lakatosDefinition,
+            myInstants: myInstantsDefinition,
+            theChatWheel: theChatWheelDefinition
         }
 
         const processingTime = Date.now() - startTime
 
-        console.log('📊 DEFINITIONS SUMMARY:')
-        console.log(`Jolanda:`)
-        console.log(`  Name: ${jolandaDefinition.name}`)
-        console.log(`  Version: ${jolandaDefinition.version}`)
-        console.log(`  Language: ${jolandaDefinition.lang}`)
-        console.log(`  Tiles Count: ${jolandaDefinition.tiles.length}`)
-        console.log(`Lakatos:`)
-        console.log(`  Name: ${lakatosDefinition.name}`)
-        console.log(`  Version: ${lakatosDefinition.version}`)
-        console.log(`  Language: ${lakatosDefinition.lang}`)
-        console.log(`  Tiles Count: ${lakatosDefinition.tiles.length}`)
-        console.log('----------------------------------------')
-        console.log(`⏱️ Processing Time: ${processingTime}ms`)
-        console.log('🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵\n')
 
         return {
             success: true,
