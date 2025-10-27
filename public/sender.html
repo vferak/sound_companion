@@ -331,6 +331,16 @@
             display: none;
         }
 
+        footer {
+            text-align: center;
+            padding-bottom: 5rem;
+            padding-top: 2rem;
+            color: #999;
+            font-size: 0.9rem;
+            border-top: 1px solid #333;
+            margin-top: 2rem;
+        }
+
         @media (max-width: 768px) {
             .tiles-grid {
                 grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -411,6 +421,10 @@
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner"></div>
     </div>
+
+    <footer id="footer">
+        Sound Companion v<span id="version">1.0.50</span>
+    </footer>
 
     <script>
         // Configuration
@@ -767,10 +781,25 @@
             }, 3000);
         }
 
+        // Fetch and update version from API endpoint
+        async function loadVersion() {
+            try {
+                const response = await fetch('/api/version');
+                const data = await response.json();
+                document.getElementById('version').textContent = data.version;
+            } catch (error) {
+                console.warn('Could not load version:', error);
+            }
+        }
+
         // Start the application when DOM is ready
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', init);
+            document.addEventListener('DOMContentLoaded', () => {
+                loadVersion();
+                init();
+            });
         } else {
+            loadVersion();
             init();
         }
     </script>

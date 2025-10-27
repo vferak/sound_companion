@@ -10,7 +10,13 @@ import {
 import { jolandaDefinition } from "./jolanda-definition"
 import { lakatosDefinition } from "./lakatos-definition"
 
+const packageJson = require("../package.json")
+
 export const rest = new Elysia()
+    // GET endpoint to retrieve app version
+    .get('/api/version', () => ({
+        version: packageJson.version
+    }))
     // REST endpoint to send messages to all connected websocket clients
     .post('/send-message', async ({ body, request }) => {
         const startTime = Date.now()

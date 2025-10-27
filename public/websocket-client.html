@@ -279,6 +279,15 @@
             opacity: 0.6;
             cursor: not-allowed;
         }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+            font-size: 0.9rem;
+            border-top: 1px solid #333;
+            margin-top: 40px;
+        }
     </style>
 </head>
 <body>
@@ -329,7 +338,12 @@
 
         <!-- Hidden audio element -->
         <audio id="audioPlayer" preload="auto"></audio>
+        <footer id="footer">
+            Sound Companion v<span id="version">1.0.50</span>
+        </footer>
     </div>
+
+
 
     <script>
         // Configuration
@@ -361,6 +375,7 @@
         let ws = null;
         let reconnectTimeout = null;
         let isPlaying = false;
+        let wakeLock = null;
         const messageHistory = [];
 
         // DOM Elements
@@ -381,12 +396,33 @@
             try {
                 ws = new WebSocket(WEBSOCKET_URL);
 
-                ws.onopen = () => {
+                ws.onopen = async () => {
                     console.log('WebSocket connected');
                     updateStatus('connected');
                     addMessage('Connected successfully');
                     reconnectInfo.style.display = 'none';
                     updateButtonStates();
+
+                    // Request Screen Wake Lock to keep display awake
+                    if ('wakeLock' in navigator) {
+                        try {
+                            wakeLock = await navigator.wakeLock.request('screen');
+                            console.log('Screen Wake Lock acquired');
+                            addMessage('Screen wake lock activated');
+
+                            // Listen for wake lock release
+                            wakeLock.addEventListener('release', () => {
+                                console.log('Screen Wake Lock was released');
+                                addMessage('Screen wake lock released');
+                            });
+                        } catch (error) {
+                            console.error('Failed to acquire wake lock:', error);
+                            addMessage(`Wake lock error: ${error.message}`, true);
+                        }
+                    } else {
+                        console.warn('Screen Wake Lock API not supported');
+                        addMessage('Note: Screen Wake Lock API not supported on this device', false);
+                    }
 
                     if (reconnectTimeout) {
                         clearTimeout(reconnectTimeout);
@@ -549,6 +585,20 @@
                 clearTimeout(reconnectTimeout);
                 reconnectTimeout = null;
             }
+
+            // Release Screen Wake Lock
+            if (wakeLock !== null) {
+                wakeLock.release()
+                    .then(() => {
+                        console.log('Screen Wake Lock released');
+                        wakeLock = null;
+                    })
+                    .catch(error => {
+                        console.error('Error releasing wake lock:', error);
+                        wakeLock = null;
+                    });
+            }
+
             updateStatus('disconnected');
             reconnectInfo.style.display = 'none';
             addMessage('Manually disconnected from server');
@@ -563,7 +613,27 @@
             if (ws) {
                 ws.close();
             }
+            if (wakeLock !== null) {
+                wakeLock.release().catch(() => {
+                    // Ignore errors during page unload
+                });
+                wakeLock = null;
+            }
         });
+
+        // Fetch and update version from API endpoint
+        async function loadVersion() {
+            try {
+                const response = await fetch('/api/version');
+                const data = await response.json();
+                document.getElementById('version').textContent = data.version;
+            } catch (error) {
+                console.warn('Could not load version:', error);
+            }
+        }
+
+        // Load version on page load
+        loadVersion();
     </script>
 </body>
 </html>
