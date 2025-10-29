@@ -69,8 +69,15 @@ export const myInstantsDefinition={
     },{
       "name": "bye bye trump",
       "filename": "and-we-say-bye-bye-donald-trumph.mp3"
+    },{
+      "name": "Huh",
+      "filename": "huh-cat.mp3"
+    },{
+      "name": "Oh no no no",
+      "filename": "among-us-role-reveal-sound.mp3"
+    },{
+      "name": "What the hellll",
+      "filename": "what-the-hellllllllllll.mp3"
     },
-
   ],
-
 }
