@@ -40,3 +40,7 @@ yarn-error.log*
 **/*.log
 package-lock.json
 **/*.bun
+
+# Database files
+*.db
+play_history.db

@@ -500,3 +500,138 @@ export const rest = new Elysia()
             }
         }
     })
+    // Get enhanced analytics with time filtering
+    .get('/analytics', ({ query, request }) => {
+        const startTime = Date.now()
+        const requestId = `req-${startTime}-${Math.random().toString(36).substr(2, 9)}`
+
+        const timeFrame = query.timeFrame as string || 'all'
+        const limit = parseInt(query.limit as string) || 10
+
+        console.log('\n📊 REST API: GET ENHANCED ANALYTICS')
+        console.log(`Request ID: ${requestId}`)
+        console.log(`Time Frame: ${timeFrame}`)
+        console.log(`Limit: ${limit}`)
+        console.log(`IP: ${request.headers.get('x-forwarded-for') || request.headers.get('host') || 'unknown'}`)
+
+        try {
+            let startTimestamp: number | undefined;
+            let endTimestamp: number | undefined;
+            const now = Date.now();
+
+            // Calculate time range based on timeFrame
+            switch(timeFrame) {
+                case 'today': {
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    startTimestamp = today.getTime();
+                    break;
+                }
+                case 'week': {
+                    startTimestamp = now - (7 * 24 * 60 * 60 * 1000);
+                    break;
+                }
+                case 'month': {
+                    const monthAgo = new Date();
+                    monthAgo.setMonth(monthAgo.getMonth() - 1);
+                    startTimestamp = monthAgo.getTime();
+                    break;
+                }
+                case 'all':
+                default:
+                    // No time filtering
+                    break;
+            }
+
+            const stats = playHistoryDb.getPlayStatsForTimeRange(startTimestamp, endTimestamp);
+            const topUsers = playHistoryDb.getTopUsersForTimeRange(limit, startTimestamp, endTimestamp);
+            const topSounds = playHistoryDb.getTopSoundsForTimeRange(limit, startTimestamp, endTimestamp);
+            const hourlyStats = playHistoryDb.getHourlyPlayStats();
+            const categoryStats = playHistoryDb.getCategoryStats();
+            const dailyStats = playHistoryDb.getDailyPlayStats(30);
+
+            const processingTime = Date.now() - startTime
+
+            console.log(`✅ Retrieved enhanced analytics for ${timeFrame}`)
+            console.log(`⏱️ Processing Time: ${processingTime}ms`)
+
+            return {
+                success: true,
+                timeFrame: timeFrame,
+                stats: stats,
+                topUsers: topUsers,
+                topSounds: topSounds,
+                hourlyStats: hourlyStats,
+                categoryStats: categoryStats,
+                dailyStats: dailyStats,
+                processingTime: `${processingTime}ms`
+            }
+        } catch (error) {
+            console.error('❌ Error fetching enhanced analytics:', error)
+            return {
+                success: false,
+                error: 'Failed to fetch analytics',
+                processingTime: `${Date.now() - startTime}ms`
+            }
+        }
+    })
+    // Get category statistics
+    .get('/category-stats', ({ request }) => {
+        const startTime = Date.now()
+        const requestId = `req-${startTime}-${Math.random().toString(36).substr(2, 9)}`
+
+        console.log('\n🎭 REST API: GET CATEGORY STATISTICS')
+        console.log(`Request ID: ${requestId}`)
+        console.log(`IP: ${request.headers.get('x-forwarded-for') || request.headers.get('host') || 'unknown'}`)
+
+        try {
+            const categoryStats = playHistoryDb.getCategoryStats()
+            const processingTime = Date.now() - startTime
+
+            console.log(`✅ Retrieved category statistics`)
+            console.log(`⏱️ Processing Time: ${processingTime}ms`)
+
+            return {
+                success: true,
+                categories: categoryStats,
+                processingTime: `${processingTime}ms`
+            }
+        } catch (error) {
+            console.error('❌ Error fetching category statistics:', error)
+            return {
+                success: false,
+                error: 'Failed to fetch category statistics',
+                processingTime: `${Date.now() - startTime}ms`
+            }
+        }
+    })
+    // Get hourly activity stats
+    .get('/hourly-stats', ({ request }) => {
+        const startTime = Date.now()
+        const requestId = `req-${startTime}-${Math.random().toString(36).substr(2, 9)}`
+
+        console.log('\n🕐 REST API: GET HOURLY STATISTICS')
+        console.log(`Request ID: ${requestId}`)
+        console.log(`IP: ${request.headers.get('x-forwarded-for') || request.headers.get('host') || 'unknown'}`)
+
+        try {
+            const hourlyStats = playHistoryDb.getHourlyPlayStats()
+            const processingTime = Date.now() - startTime
+
+            console.log(`✅ Retrieved hourly statistics`)
+            console.log(`⏱️ Processing Time: ${processingTime}ms`)
+
+            return {
+                success: true,
+                hourlyStats: hourlyStats,
+                processingTime: `${processingTime}ms`
+            }
+        } catch (error) {
+            console.error('❌ Error fetching hourly statistics:', error)
+            return {
+                success: false,
+                error: 'Failed to fetch hourly statistics',
+                processingTime: `${Date.now() - startTime}ms`
+            }
+        }
+    })

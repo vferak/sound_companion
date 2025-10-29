@@ -132,7 +132,7 @@ Sender Dashboard (/public/sender.html)
 - **Elysia** — minimal server framework for Bun
 - **Bun** — fast runtime for JS/TS
 - **TypeScript** — type safety
-- **rock8.cloud** — quick, reliable deployment
+- **[rock8.cloud](https://rock8.cloud/)** — quick, reliable deployment
 
 ## Acknowledgments
 
