@@ -389,7 +389,7 @@
                     type="text"
                     class="search-input"
                     id="searchInput"
-                    placeholder="Search sounds..."
+                    placeholder="Search sounds... Cmd+K/Ctrl+K to focus search and select text"
                     autocomplete="off"
                 >
             </div>
@@ -593,6 +593,14 @@
 
             // Keyboard shortcuts
             document.addEventListener('keydown', (e) => {
+                // Cmd+K (Mac) or Ctrl+K (other platforms) to focus search and select text
+                if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
+                    e.preventDefault();
+                    searchInput?.focus();
+                    searchInput?.select();
+                    return;
+                }
+
                 if (e.key === '/' && document.activeElement !== searchInput) {
                     e.preventDefault();
                     searchInput?.focus();
