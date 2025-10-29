@@ -11,6 +11,7 @@ import { jolandaDefinition } from "./jolanda-definition"
 import { lakatosDefinition } from "./lakatos-definition"
 import { myInstantsDefinition } from "./myInstants"
 import { theChatWheelDefinition } from "./theChatWheel"
+import { playHistoryDb, PlayHistoryRecord } from "./database"
 
 const packageJson = require("../package.json")
 
@@ -38,6 +39,18 @@ export const rest = new Elysia()
         console.log(JSON.stringify(body, null, 2))
         console.log('----------------------------------------')
 
+        // If this is a play-sound request, record it in the database
+        if (body.type === 'play-sound' && body.username && body.filename && body.category) {
+            const playRecord: PlayHistoryRecord = {
+                username: body.username,
+                filename: body.filename,
+                category: body.category,
+                name: body.name || body.filename,
+                timestamp: Date.now()
+            };
+            playHistoryDb.addPlayRecord(playRecord);
+        }
+
         const messageData = {
             type: body.type || 'server-message',
             message: body.message,
@@ -45,7 +58,9 @@ export const rest = new Elysia()
             timestamp: Date.now(),
             ...body.data, // Allow additional custom data
             ...(body.category && { category: body.category }),
-            ...(body.filename && { filename: body.filename })
+            ...(body.filename && { filename: body.filename }),
+            ...(body.username && { username: body.username }),
+            ...(body.name && { name: body.name })
         }
 
         console.log('📤 MESSAGE DATA TO BROADCAST:')
@@ -98,6 +113,8 @@ export const rest = new Elysia()
             message: t.String(),
             channel: t.Optional(t.String()),
             type: t.Optional(t.String()),
+            username: t.Optional(t.String()),
+            name: t.Optional(t.String()),
             category: t.Optional(t.String()),
             filename: t.Optional(t.String()),
             data: t.Optional(t.Any())
@@ -379,5 +396,107 @@ export const rest = new Elysia()
             name: definitionName,
             definition,
             processingTime: `${processingTime}ms`
+        }
+    })
+    // Get user play history
+    .get('/play-history/:username', ({ params, request }) => {
+        const startTime = Date.now()
+        const requestId = `req-${startTime}-${Math.random().toString(36).substr(2, 9)}`
+
+        console.log('\n📊 REST API: GET USER PLAY HISTORY')
+        console.log(`Request ID: ${requestId}`)
+        console.log(`Username: ${params.username}`)
+        console.log(`IP: ${request.headers.get('x-forwarded-for') || request.headers.get('host') || 'unknown'}`)
+
+        try {
+            const history = playHistoryDb.getUserPlayHistory(params.username, 100)
+            const processingTime = Date.now() - startTime
+
+            console.log(`✅ Retrieved ${history.length} play records for user: ${params.username}`)
+            console.log(`⏱️ Processing Time: ${processingTime}ms`)
+
+            return {
+                success: true,
+                username: params.username,
+                history: history,
+                count: history.length,
+                processingTime: `${processingTime}ms`
+            }
+        } catch (error) {
+            console.error('❌ Error fetching user play history:', error)
+            return {
+                success: false,
+                error: 'Failed to fetch play history',
+                processingTime: `${Date.now() - startTime}ms`
+            }
+        }
+    })
+    // Get all play history
+    .get('/play-history', ({ query, request }) => {
+        const startTime = Date.now()
+        const requestId = `req-${startTime}-${Math.random().toString(36).substr(2, 9)}`
+        const limit = parseInt(query.limit as string) || 50
+
+        console.log('\n📊 REST API: GET ALL PLAY HISTORY')
+        console.log(`Request ID: ${requestId}`)
+        console.log(`Limit: ${limit}`)
+        console.log(`IP: ${request.headers.get('x-forwarded-for') || request.headers.get('host') || 'unknown'}`)
+
+        try {
+            const history = playHistoryDb.getAllPlayHistory(limit)
+            const stats = playHistoryDb.getPlayStats()
+            const processingTime = Date.now() - startTime
+
+            console.log(`✅ Retrieved ${history.length} play records`)
+            console.log(`⏱️ Processing Time: ${processingTime}ms`)
+
+            return {
+                success: true,
+                history: history,
+                count: history.length,
+                stats: stats,
+                processingTime: `${processingTime}ms`
+            }
+        } catch (error) {
+            console.error('❌ Error fetching all play history:', error)
+            return {
+                success: false,
+                error: 'Failed to fetch play history',
+                processingTime: `${Date.now() - startTime}ms`
+            }
+        }
+    })
+    // Get play statistics
+    .get('/play-stats', ({ request }) => {
+        const startTime = Date.now()
+        const requestId = `req-${startTime}-${Math.random().toString(36).substr(2, 9)}`
+
+        console.log('\n📈 REST API: GET PLAY STATISTICS')
+        console.log(`Request ID: ${requestId}`)
+        console.log(`IP: ${request.headers.get('x-forwarded-for') || request.headers.get('host') || 'unknown'}`)
+
+        try {
+            const stats = playHistoryDb.getPlayStats()
+            const topUsers = playHistoryDb.getTopUsers(10)
+            const topSounds = playHistoryDb.getTopSounds(10)
+            const processingTime = Date.now() - startTime
+
+            console.log(`✅ Retrieved play statistics`)
+            console.log(`⏱️ Processing Time: ${processingTime}ms`)
+
+            return {
+                success: true,
+                stats: stats,
+                topUsers: topUsers,
+                topSounds: topSounds,
+                processingTime: `${processingTime}ms`
+            }
+        } catch (error) {
+            console.error('❌ Error fetching play statistics:', error)
+            return {
+                success: false,
+                error: 'Failed to fetch statistics',
+                processingTime: `${Date.now() - startTime}ms`
+            }
         }
     })

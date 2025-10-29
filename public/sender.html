@@ -331,6 +331,142 @@
             display: none;
         }
 
+        /* Play History Styles */
+        .play-history-section {
+            margin-top: 40px;
+            padding: 20px 0;
+            border-top: 1px solid #333;
+        }
+
+        .play-history-section .header h2 {
+            margin: 0 0 10px 0;
+            font-size: 1.5rem;
+        }
+
+        .play-history-section .subtitle {
+            color: #999;
+            margin-bottom: 20px;
+        }
+
+        .history-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .history-column {
+            min-width: 0;
+        }
+
+        .history-column h3 {
+            margin: 0 0 15px 0;
+            color: #fff;
+            font-size: 1.2rem;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #333;
+        }
+
+        .history-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #333;
+            border-radius: 8px;
+            background: #1a1a1a;
+        }
+
+        .history-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 1px solid #333;
+            transition: background 0.2s ease;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-item:hover {
+            background: #2a2a2a;
+        }
+
+        .history-item .icon {
+            font-size: 1.2rem;
+            margin-right: 12px;
+            opacity: 0.7;
+        }
+
+        .history-item .details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .history-item .name {
+            color: #fff;
+            font-weight: 500;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .history-item .meta {
+            color: #999;
+            font-size: 0.85rem;
+            display: flex;
+            gap: 8px;
+        }
+
+        .history-item .category {
+            background: #333;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+
+        .history-item .timestamp {
+            margin-left: auto;
+            color: #666;
+            font-size: 0.8rem;
+        }
+
+        .history-empty {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        /* Username Management */
+        .username-display {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: #333;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #fff;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .username-display .change-user-btn {
+            background: #666;
+            border: none;
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .username-display .change-user-btn:hover {
+            background: #777;
+        }
+
         footer {
             text-align: center;
             padding-bottom: 5rem;
@@ -338,12 +474,11 @@
             color: #999;
             font-size: 0.9rem;
             border-top: 1px solid #333;
-            margin-top: 2rem;
         }
 
         @media (max-width: 768px) {
             .tiles-grid {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
             }
 
             .header h1 {
@@ -351,16 +486,36 @@
             }
 
             .controls {
-                padding: 15px;
+                flex-direction: column;
+                gap: 15px;
             }
 
             .tiles-container {
                 padding: 15px;
             }
+
+            .history-container {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .username-display {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin-bottom: 10px;
+                justify-content: center;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Username Display -->
+    <div class="username-display" id="usernameDisplay" style="display: none;">
+        <span>👤 <span id="currentUsernameText">User</span></span>
+        <button class="change-user-btn" onclick="changeUsername()">Change</button>
+    </div>
+
     <div class="container">
         <div class="header">
             <h1>🎵 Sound Companion</h1>
@@ -415,6 +570,34 @@
         <div class="status-text" id="statusText">Connecting...</div>
     </div>
 
+    <div class="no-results" id="noResults" style="display: none;">
+        No sounds found matching your criteria.
+    </div>
+
+    <!-- Play History Section -->
+    <div class="play-history-section" id="playHistorySection" style="display: none;">
+        <div class="container">
+            <div class="header">
+                <h2>Play History</h2>
+                <div class="subtitle">Recent sound activity</div>
+            </div>
+            <div class="history-container">
+                <div class="history-column">
+                    <h3>Your History</h3>
+                    <div class="history-list" id="userHistoryList">
+                        <!-- User history items will be inserted here -->
+                    </div>
+                </div>
+                <div class="history-column">
+                    <h3>All Activity</h3>
+                    <div class="history-list" id="allHistoryList">
+                        <!-- All history items will be inserted here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="toast" id="toast"></div>
 
     <div class="loading-overlay" id="loadingOverlay">
@@ -442,6 +625,9 @@
         let allTiles = [];
         let playCount = 0;
         let recentlyPlayed = [];
+        let currentUsername = null;
+        let userPlayHistory = [];
+        let allPlayHistory = [];
 
         let currentFilter = 'all';
         let searchTerm = '';
@@ -454,6 +640,9 @@
             showLoading(true);
 
             try {
+                // Check and prompt for username
+                await checkUsername();
+
                 // Load sound definitions from API
                 await loadSoundDefinitions();
 
@@ -461,6 +650,12 @@
                 setupEventListeners();
                 renderTiles();
                 updateStats();
+
+                // Load play history
+                await loadPlayHistory();
+
+                // Setup websocket for real-time updates
+                setupWebSocketListener();
 
                 // Start server status monitoring
                 checkServerStatus();
@@ -474,6 +669,30 @@
                 // Always hide loading
                 showLoading(false);
             }
+        }
+
+        // Check if username exists in localStorage, prompt if not
+        async function checkUsername() {
+            currentUsername = localStorage.getItem('soundCompanionUsername');
+
+            if (!currentUsername) {
+                while (!currentUsername || currentUsername.trim() === '') {
+                    currentUsername = prompt('Please enter your username:');
+                    if (currentUsername === null) {
+                        // User cancelled, use a default
+                        currentUsername = 'Anonymous';
+                        break;
+                    }
+                    currentUsername = currentUsername.trim();
+                }
+
+                localStorage.setItem('soundCompanionUsername', currentUsername);
+                showToast(`Welcome, ${currentUsername}!`);
+            }
+
+            // Update username display
+            updateUsernameDisplay();
+            console.log(`Current user: ${currentUsername}`);
         }
 
         // Load sound definitions from the API
@@ -634,7 +853,7 @@
                 tileElement.classList.add('playing');
                 showToast(`Playing: ${name}`);
 
-                // Send to server
+                // Send to server with username
                 const response = await fetch(`${SERVER_URL}/send-message`, {
                     method: 'POST',
                     headers: {
@@ -645,6 +864,8 @@
                         message: `Playing ${name}`,
                         category: category,
                         filename: filename,
+                        name: name,
+                        username: currentUsername,
                         channel: 'default'
                     })
                 });
@@ -663,6 +884,9 @@
                     if (recentlyPlayed.length > 20) {
                         recentlyPlayed = recentlyPlayed.slice(0, 20);
                     }
+
+                    // Refresh play history
+                    await loadPlayHistory();
 
                     // Remove playing animation after 2 seconds
                     setTimeout(() => {
@@ -793,6 +1017,195 @@
             setTimeout(() => {
                 toast.classList.remove('show');
             }, 3000);
+        }
+
+        // Load play history from server
+        async function loadPlayHistory() {
+            if (!currentUsername) return;
+
+            try {
+                // Load user's history
+                const userResponse = await fetch(`${SERVER_URL}/play-history/${encodeURIComponent(currentUsername)}`);
+                const userData = await userResponse.json();
+
+                if (userData.success) {
+                    userPlayHistory = userData.history || [];
+                }
+
+                // Load all history
+                const allResponse = await fetch(`${SERVER_URL}/play-history?limit=50`);
+                const allData = await allResponse.json();
+
+                if (allData.success) {
+                    allPlayHistory = allData.history || [];
+                }
+
+                renderPlayHistory();
+
+                // Show play history section if there's any history
+                const historySection = document.getElementById('playHistorySection');
+                if (historySection && (userPlayHistory.length > 0 || allPlayHistory.length > 0)) {
+                    historySection.style.display = 'block';
+                }
+            } catch (error) {
+                console.warn('Could not load play history:', error);
+            }
+        }
+
+        // Render play history
+        function renderPlayHistory() {
+            renderUserHistory();
+            renderAllHistory();
+        }
+
+        // Render user history
+        function renderUserHistory() {
+            const userHistoryList = document.getElementById('userHistoryList');
+            if (!userHistoryList) return;
+
+            if (userPlayHistory.length === 0) {
+                userHistoryList.innerHTML = '<div class="history-empty">No play history yet. Start playing some sounds!</div>';
+                return;
+            }
+
+            userHistoryList.innerHTML = userPlayHistory.map(item => {
+                const timestamp = new Date(item.timestamp);
+                const timeAgo = getTimeAgo(timestamp);
+
+                return `
+                    <div class="history-item">
+                        <div class="icon">🎵</div>
+                        <div class="details">
+                            <div class="name">${item.name}</div>
+                            <div class="meta">
+                                <span class="category">${item.category}</span>
+                                <span class="filename">${item.filename}</span>
+                            </div>
+                        </div>
+                        <div class="timestamp">${timeAgo}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Render all history
+        function renderAllHistory() {
+            const allHistoryList = document.getElementById('allHistoryList');
+            if (!allHistoryList) return;
+
+            if (allPlayHistory.length === 0) {
+                allHistoryList.innerHTML = '<div class="history-empty">No activity yet!</div>';
+                return;
+            }
+
+            allHistoryList.innerHTML = allPlayHistory.map(item => {
+                const timestamp = new Date(item.timestamp);
+                const timeAgo = getTimeAgo(timestamp);
+
+                return `
+                    <div class="history-item">
+                        <div class="icon">🎵</div>
+                        <div class="details">
+                            <div class="name">${item.name}</div>
+                            <div class="meta">
+                                <span class="category">${item.category}</span>
+                                <span class="filename">${item.filename}</span>
+                                <span style="color: #666;">by ${item.username}</span>
+                            </div>
+                        </div>
+                        <div class="timestamp">${timeAgo}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Get time ago string
+        function getTimeAgo(date) {
+            const now = new Date();
+            const diffMs = now - date;
+            const diffSeconds = Math.floor(diffMs / 1000);
+            const diffMinutes = Math.floor(diffSeconds / 60);
+            const diffHours = Math.floor(diffMinutes / 60);
+            const diffDays = Math.floor(diffHours / 24);
+
+            if (diffSeconds < 60) {
+                return 'just now';
+            } else if (diffMinutes < 60) {
+                return `${diffMinutes}m ago`;
+            } else if (diffHours < 24) {
+                return `${diffHours}h ago`;
+            } else if (diffDays < 30) {
+                return `${diffDays}d ago`;
+            } else {
+                return date.toLocaleDateString();
+            }
+        }
+
+        // Update username display
+        function updateUsernameDisplay() {
+            const usernameDisplay = document.getElementById('usernameDisplay');
+            const usernameText = document.getElementById('currentUsernameText');
+
+            if (currentUsername && usernameDisplay && usernameText) {
+                usernameText.textContent = currentUsername;
+                usernameDisplay.style.display = 'flex';
+            }
+        }
+
+        // Change username function
+        async function changeUsername() {
+            const newUsername = prompt('Enter new username:', currentUsername);
+            if (newUsername && newUsername.trim() !== '' && newUsername.trim() !== currentUsername) {
+                currentUsername = newUsername.trim();
+                localStorage.setItem('soundCompanionUsername', currentUsername);
+                updateUsernameDisplay();
+                showToast(`Username changed to: ${currentUsername}`);
+
+                // Reload play history for new user
+                await loadPlayHistory();
+            }
+        }
+
+        // Setup WebSocket listener for real-time updates
+        function setupWebSocketListener() {
+            // Create WebSocket connection for real-time updates
+            const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${wsProtocol}//${window.location.host}/ws?channel=default&clientId=sender-${Date.now()}`;
+
+            try {
+                const ws = new WebSocket(wsUrl);
+
+                ws.onmessage = async (event) => {
+                    try {
+                        const data = JSON.parse(event.data);
+
+                        // If someone played a sound, refresh the history
+                        if (data.type === 'play-sound') {
+                            console.log('Sound played by someone, refreshing history...');
+                            await loadPlayHistory();
+                        }
+                    } catch (error) {
+                        console.warn('Error parsing WebSocket message:', error);
+                    }
+                };
+
+                ws.onopen = () => {
+                    console.log('WebSocket connected for real-time updates');
+                };
+
+                ws.onclose = () => {
+                    console.log('WebSocket disconnected, attempting to reconnect...');
+                    // Reconnect after 3 seconds
+                    setTimeout(setupWebSocketListener, 3000);
+                };
+
+                ws.onerror = (error) => {
+                    console.warn('WebSocket error:', error);
+                };
+
+            } catch (error) {
+                console.warn('Failed to setup WebSocket listener:', error);
+            }
         }
 
         // Fetch and update version from API endpoint

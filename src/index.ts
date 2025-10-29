@@ -2,6 +2,7 @@ import { staticPlugin } from "@elysiajs/static";
 import { Elysia } from "elysia";
 import { rest } from "./rest";
 import { websocket } from "./websocket";
+import { playHistoryDb } from "./database";
 
 const app = new Elysia()
 	.get("/", () => "Hello Elysia")
@@ -13,3 +14,6 @@ const app = new Elysia()
 console.log(
 	`🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`,
 );
+
+// Initialize database
+console.log("🗄️ Database initialized and ready");
