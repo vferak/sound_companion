@@ -397,7 +397,6 @@
             <div class="filter-buttons" id="filterButtons">
                 <button class="filter-btn active" data-filter="all">All</button>
                 <button class="filter-btn" data-filter="recent">Recent</button>
-                <button class="filter-btn" data-filter="favorites">Favorites</button>
             </div>
         </div>
 
@@ -443,7 +442,7 @@
         let allTiles = [];
         let playCount = 0;
         let recentlyPlayed = [];
-        let favorites = JSON.parse(localStorage.getItem('favoriteSounds') || '[]');
+
         let currentFilter = 'all';
         let searchTerm = '';
 
@@ -540,7 +539,6 @@
             }
 
             buttons.push('<button class="filter-btn" data-filter="recent">Recent</button>');
-            buttons.push('<button class="filter-btn" data-filter="favorites">Favorites</button>');
 
             filterButtons.innerHTML = buttons.join('');
 
@@ -559,6 +557,13 @@
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
 
+            // Clear search input when switching tabs
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.value = '';
+                searchTerm = '';
+            }
+
             currentFilter = filter;
             renderTiles();
         }
@@ -570,6 +575,12 @@
             if (searchInput) {
                 searchInput.addEventListener('input', (e) => {
                     searchTerm = e.target.value;
+                    // When user starts typing, switch to "All" tab
+                    if (searchTerm && currentFilter !== 'all') {
+                        currentFilter = 'all';
+                        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                        document.querySelector('[data-filter="all"]')?.classList.add('active');
+                    }
                     renderTiles();
                 });
             }
@@ -700,11 +711,6 @@
                     tiles = tiles.filter(t => {
                         const key = `${t.category}:${t.filename}`;
                         return recentlyPlayed.includes(key);
-                    });
-                } else if (currentFilter === 'favorites') {
-                    tiles = tiles.filter(t => {
-                        const key = `${t.category}:${t.filename}`;
-                        return favorites.includes(key);
                     });
                 } else {
                     // Category filter

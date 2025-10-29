@@ -51,6 +51,21 @@ export const myInstantsDefinition={
     },{
       "name": "You got jebaited",
       "filename": "jebaitedsoundboard.mp3"
+    },{
+      "name": "Two thousands years later",
+      "filename": "two-thousand-years-later.mp3"
+    },{
+      "name": "Clarkson genious gravity",
+      "filename": "clarkson-genius-gravity.mp3"
+    },{
+      "name": "Clarkson speed and power",
+      "filename": "speed-and-power.mp3"
+    },{
+      "name": "Clarkson grunt yes",
+      "filename": "grunt-yes.mp3"
+    },{
+      "name": "Clarkson laugh",
+      "filename": "jeremy-laughing.mp3"
     },
 
   ],
