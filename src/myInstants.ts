@@ -66,6 +66,9 @@ export const myInstantsDefinition={
     },{
       "name": "Clarkson laugh",
       "filename": "jeremy-laughing.mp3"
+    },{
+      "name": "bye bye trump",
+      "filename": "and-we-say-bye-bye-donald-trumph.mp3"
     },
 
   ],
