@@ -73,7 +73,7 @@ export const myInstantsDefinition={
       "name": "Huh",
       "filename": "huh-cat.mp3"
     },{
-      "name": "Oh no no no",
+      "name": "Amongus",
       "filename": "among-us-role-reveal-sound.mp3"
     },{
       "name": "What the hellll",
