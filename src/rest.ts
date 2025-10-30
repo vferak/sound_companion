@@ -10,6 +10,7 @@ import {
 import { jolandaDefinition } from "./jolanda-definition"
 import { lakatosDefinition } from "./lakatos-definition"
 import { myInstantsDefinition } from "./myInstants"
+import { voicemodDefinitions } from "./voicemod-definition"
 import { theChatWheelDefinition } from "./theChatWheel"
 import { playHistoryDb, PlayHistoryRecord } from "./database"
 
@@ -312,6 +313,7 @@ export const rest = new Elysia()
             jolanda: jolandaDefinition,
             lakatos: lakatosDefinition,
             myInstants: myInstantsDefinition,
+            voicemod: voicemodDefinitions,
             theChatWheel: theChatWheelDefinition
         }
 
