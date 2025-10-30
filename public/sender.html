@@ -220,6 +220,26 @@
             font-size: 1.2rem;
         }
 
+        .sound-tile .shortcut-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(102, 126, 234, 0.9);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .sound-tile.playing .shortcut-badge {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+
         .sound-tile.playing .play-indicator {
             opacity: 1;
             animation: pulse 1s infinite;
@@ -826,10 +846,17 @@
                 }
 
                 if (e.key === 'Escape' && document.activeElement === searchInput) {
-                    searchInput.value = '';
-                    searchTerm = '';
-                    renderTiles();
                     searchInput.blur();
+                }
+
+                // Number shortcuts (1-5) for playing first 5 tiles
+                if (document.activeElement !== searchInput && ['1', '2', '3', '4', '5','6','7','8','9'].includes(e.key)) {
+                    e.preventDefault();
+                    const shortcutNum = parseInt(e.key);
+                    const tile = document.querySelector('[data-shortcut="' + shortcutNum + '"]');
+                    if (tile) {
+                        tile.click();
+                    }
                 }
             });
         }
@@ -920,17 +947,22 @@
             tilesGrid.style.display = 'grid';
             if (noResults) noResults.style.display = 'none';
 
-            tilesGrid.innerHTML = filteredTiles.map(tile => `
+            tilesGrid.innerHTML = filteredTiles.map((tile, index) => {
+              const shortcutKey = index < 9 ? (index + 1).toString() : null;
+                return `
                 <div class="sound-tile"
                      data-filename="${tile.filename}"
                      data-category="${tile.category}"
-                     data-name="${tile.name}">
+                     data-name="${tile.name}"
+                     data-shortcut="${shortcutKey || ''}">
                     <div class="icon">🎵</div>
                     <div class="name">${tile.name}</div>
                     <div class="filename">${tile.filename}</div>
                     <div class="play-indicator">▶</div>
+                    ${shortcutKey ? `<div class="shortcut-badge">${shortcutKey}</div>` : ''}
                 </div>
-            `).join('');
+            `;
+            }).join('');
         }
 
         // Get filtered tiles based on current filter and search

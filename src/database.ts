@@ -15,7 +15,7 @@ class PlayHistoryDatabase {
 
   constructor() {
     // Create a persistent SQLite database
-    this.db = new Database("play_history.db");
+    this.db = new Database("./data/play_history.db");
     this.initDatabase();
   }
 
