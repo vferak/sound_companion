@@ -13,6 +13,7 @@ import { myInstantsDefinition } from "./myInstants";
 import { voicemodDefinitions } from "./voicemod-definition";
 import { theChatWheelDefinition } from "./theChatWheel";
 import { playHistoryDb, PlayHistoryRecord } from "./database";
+import { borisDefinitions } from "./boris-definition";
 
 const packageJson = require("../package.json");
 
@@ -384,6 +385,7 @@ export const rest = new Elysia()
       myInstants: myInstantsDefinition,
       voicemod: voicemodDefinitions,
       theChatWheel: theChatWheelDefinition,
+      boris: borisDefinitions,
     };
 
     const processingTime = Date.now() - startTime;
