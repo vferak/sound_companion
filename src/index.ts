@@ -10,14 +10,9 @@ const app = new Elysia()
   .use(websocket)
   .use(rest)
   .listen(3700);
-  .get("/", () => "Hello Elysia")
-  .use(staticPlugin())
-  .use(websocket)
-  .use(rest)
-  .listen(3700);
 
 console.log(
-  `🦊 Elysia is running at http://${app.server?.hostname}:${app.server?.port}`
+  `🦊 Elysia is running at http://${app.server?.hostname}:${app.server?.port}`,
 );
 
 // Initialize database

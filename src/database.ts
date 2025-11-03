@@ -131,9 +131,7 @@ class PlayHistoryDatabase {
     }
   }
 
-  getTopSounds(
-    limit: number = 10,
-  ): Array<{
+  getTopSounds(limit: number = 10): Array<{
     name: string;
     filename: string;
     category: string;

@@ -27,9 +27,7 @@ export const rest = new Elysia()
     "/send-message",
     async ({ body, request }) => {
       const startTime = Date.now();
-      const requestId = `req-${startTime}-${Math.random()
-        .toString(36)
-        .substr(2, 9)}`;
+      const requestId = `req-${startTime}-${Math.random().toString(36).substr(2, 9)}`;
 
       console.log("\n🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀");
       console.log("📮 REST API: SEND MESSAGE");
@@ -37,15 +35,9 @@ export const rest = new Elysia()
       console.log(`Request ID: ${requestId}`);
       console.log(`Method: POST /send-message`);
       console.log(
-        `IP: ${
-          request.headers.get("x-forwarded-for") ||
-          request.headers.get("host") ||
-          "unknown"
-        }`
+        `IP: ${request.headers.get("x-forwarded-for") || request.headers.get("host") || "unknown"}`
       );
-      console.log(
-        `User-Agent: ${request.headers.get("user-agent") || "unknown"}`
-      );
+      console.log(`User-Agent: ${request.headers.get("user-agent") || "unknown"}`);
       console.log(`Content-Type: ${request.headers.get("content-type")}`);
       console.log(`Timestamp: ${new Date().toISOString()}`);
       console.log("----------------------------------------");
@@ -54,12 +46,7 @@ export const rest = new Elysia()
       console.log("----------------------------------------");
 
       // If this is a play-sound request, record it in the database
-      if (
-        body.type === "play-sound" &&
-        body.username &&
-        body.filename &&
-        body.category
-      ) {
+      if (body.type === "play-sound" && body.username && body.filename && body.category) {
         const playRecord: PlayHistoryRecord = {
           username: body.username,
           filename: body.filename,
@@ -111,14 +98,10 @@ export const rest = new Elysia()
 
       console.log("----------------------------------------");
       console.log("📊 BROADCAST RESULTS:");
-      console.log(
-        `✅ Successfully sent: ${broadcastResult.sent || recipientCount}`
-      );
+      console.log(`✅ Successfully sent: ${broadcastResult.sent || recipientCount}`);
       console.log(`❌ Failed: ${broadcastResult.failed || 0}`);
       console.log(`⏱️ Processing Time: ${processingTime}ms`);
-      console.log(
-        `Timestamp: ${new Date(messageData.timestamp).toISOString()}`
-      );
+      console.log(`Timestamp: ${new Date(messageData.timestamp).toISOString()}`);
       console.log("🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀\n");
 
       return {
@@ -148,9 +131,7 @@ export const rest = new Elysia()
   // Endpoint to get connected clients info
   .get("/ws-clients", ({ request }) => {
     const startTime = Date.now();
-    const requestId = `req-${startTime}-${Math.random()
-      .toString(36)
-      .substr(2, 9)}`;
+    const requestId = `req-${startTime}-${Math.random().toString(36).substr(2, 9)}`;
 
     console.log("\n📊📊📊📊📊📊📊📊📊📊📊📊📊📊📊📊📊📊");
     console.log("📋 REST API: GET CLIENT STATUS");
@@ -158,15 +139,9 @@ export const rest = new Elysia()
     console.log(`Request ID: ${requestId}`);
     console.log(`Method: GET /ws-clients`);
     console.log(
-      `IP: ${
-        request.headers.get("x-forwarded-for") ||
-        request.headers.get("host") ||
-        "unknown"
-      }`
+      `IP: ${request.headers.get("x-forwarded-for") || request.headers.get("host") || "unknown"}`
     );
-    console.log(
-      `User-Agent: ${request.headers.get("user-agent") || "unknown"}`
-    );
+    console.log(`User-Agent: ${request.headers.get("user-agent") || "unknown"}`);
     console.log(`Timestamp: ${new Date().toISOString()}`);
     console.log("----------------------------------------");
 
@@ -196,9 +171,7 @@ export const rest = new Elysia()
       console.log(`  [${index + 1}] ID: ${client.clientId}`);
       console.log(`      Channel: ${client.channel}`);
       console.log(`      Connected: ${client.connectedAt}`);
-      console.log(
-        `      Status: ${client.isAlive ? "🟢 Active" : "🔴 Inactive"}`
-      );
+      console.log(`      Status: ${client.isAlive ? "🟢 Active" : "🔴 Inactive"}`);
     });
     console.log("----------------------------------------");
     console.log(`⏱️ Processing Time: ${processingTime}ms`);
@@ -219,9 +192,7 @@ export const rest = new Elysia()
     "/send-to-client/:clientId",
     async ({ params, body, request }) => {
       const startTime = Date.now();
-      const requestId = `req-${startTime}-${Math.random()
-        .toString(36)
-        .substr(2, 9)}`;
+      const requestId = `req-${startTime}-${Math.random().toString(36).substr(2, 9)}`;
 
       console.log("\n💬💬💬💬💬💬💬💬💬💬💬💬💬💬💬💬💬💬");
       console.log("📨 REST API: DIRECT MESSAGE");
@@ -229,15 +200,9 @@ export const rest = new Elysia()
       console.log(`Request ID: ${requestId}`);
       console.log(`Method: POST /send-to-client/${params.clientId}`);
       console.log(
-        `IP: ${
-          request.headers.get("x-forwarded-for") ||
-          request.headers.get("host") ||
-          "unknown"
-        }`
+        `IP: ${request.headers.get("x-forwarded-for") || request.headers.get("host") || "unknown"}`
       );
-      console.log(
-        `User-Agent: ${request.headers.get("user-agent") || "unknown"}`
-      );
+      console.log(`User-Agent: ${request.headers.get("user-agent") || "unknown"}`);
       console.log(`Content-Type: ${request.headers.get("content-type")}`);
       console.log(`Timestamp: ${new Date().toISOString()}`);
       console.log("----------------------------------------");
@@ -282,9 +247,7 @@ export const rest = new Elysia()
 
         console.log("✅ RESULT: Message sent successfully");
         console.log(
-          `Client Status: ${
-            client.readyState === 1 ? "🟢 Connected" : "🔴 Disconnected"
-          }`
+          `Client Status: ${client.readyState === 1 ? "🟢 Connected" : "🔴 Disconnected"}`
         );
         console.log(`Client Channel: ${client.data.channel}`);
         console.log(`Client Connected At: ${client.data.connectedAt}`);
@@ -329,11 +292,7 @@ export const rest = new Elysia()
 
     console.log("\n🏥 REST API: HEALTH CHECK");
     console.log(
-      `IP: ${
-        request.headers.get("x-forwarded-for") ||
-        request.headers.get("host") ||
-        "unknown"
-      }`
+      `IP: ${request.headers.get("x-forwarded-for") || request.headers.get("host") || "unknown"}`
     );
     console.log(`Timestamp: ${new Date().toISOString()}`);
 
@@ -357,9 +316,7 @@ export const rest = new Elysia()
   // Sound definitions endpoint
   .get("/sound-definitions", ({ request }) => {
     const startTime = Date.now();
-    const requestId = `req-${startTime}-${Math.random()
-      .toString(36)
-      .substr(2, 9)}`;
+    const requestId = `req-${startTime}-${Math.random().toString(36).substr(2, 9)}`;
 
     console.log("\n🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵");
     console.log("🔊 REST API: GET SOUND DEFINITIONS");
@@ -367,15 +324,9 @@ export const rest = new Elysia()
     console.log(`Request ID: ${requestId}`);
     console.log(`Method: GET /sound-definitions`);
     console.log(
-      `IP: ${
-        request.headers.get("x-forwarded-for") ||
-        request.headers.get("host") ||
-        "unknown"
-      }`
+      `IP: ${request.headers.get("x-forwarded-for") || request.headers.get("host") || "unknown"}`
     );
-    console.log(
-      `User-Agent: ${request.headers.get("user-agent") || "unknown"}`
-    );
+    console.log(`User-Agent: ${request.headers.get("user-agent") || "unknown"}`);
     console.log(`Timestamp: ${new Date().toISOString()}`);
     console.log("----------------------------------------");
 
@@ -412,9 +363,7 @@ export const rest = new Elysia()
   // Get specific sound definition by name
   .get("/sound-definitions/:name", ({ params, request }) => {
     const startTime = Date.now();
-    const requestId = `req-${startTime}-${Math.random()
-      .toString(36)
-      .substr(2, 9)}`;
+    const requestId = `req-${startTime}-${Math.random().toString(36).substr(2, 9)}`;
 
     console.log("\n🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵");
     console.log("🔊 REST API: GET SOUND DEFINITION BY NAME");
@@ -422,15 +371,9 @@ export const rest = new Elysia()
     console.log(`Request ID: ${requestId}`);
     console.log(`Method: GET /sound-definitions/${params.name}`);
     console.log(
-      `IP: ${
-        request.headers.get("x-forwarded-for") ||
-        request.headers.get("host") ||
-        "unknown"
-      }`
+      `IP: ${request.headers.get("x-forwarded-for") || request.headers.get("host") || "unknown"}`
     );
-    console.log(
-      `User-Agent: ${request.headers.get("user-agent") || "unknown"}`
-    );
+    console.log(`User-Agent: ${request.headers.get("user-agent") || "unknown"}`);
     console.log(`Timestamp: ${new Date().toISOString()}`);
     console.log("----------------------------------------");
     console.log(`Requested Definition: ${params.name}`);
@@ -483,28 +426,20 @@ export const rest = new Elysia()
   // Get user play history
   .get("/play-history/:username", ({ params, request }) => {
     const startTime = Date.now();
-    const requestId = `req-${startTime}-${Math.random()
-      .toString(36)
-      .substr(2, 9)}`;
+    const requestId = `req-${startTime}-${Math.random().toString(36).substr(2, 9)}`;
 
     console.log("\n📊 REST API: GET USER PLAY HISTORY");
     console.log(`Request ID: ${requestId}`);
     console.log(`Username: ${params.username}`);
     console.log(
-      `IP: ${
-        request.headers.get("x-forwarded-for") ||
-        request.headers.get("host") ||
-        "unknown"
-      }`
+      `IP: ${request.headers.get("x-forwarded-for") || request.headers.get("host") || "unknown"}`
     );
 
     try {
       const history = playHistoryDb.getUserPlayHistory(params.username, 100);
       const processingTime = Date.now() - startTime;
 
-      console.log(
-        `✅ Retrieved ${history.length} play records for user: ${params.username}`
-      );
+      console.log(`✅ Retrieved ${history.length} play records for user: ${params.username}`);
       console.log(`⏱️ Processing Time: ${processingTime}ms`);
 
       return {
@@ -526,20 +461,14 @@ export const rest = new Elysia()
   // Get all play history
   .get("/play-history", ({ query, request }) => {
     const startTime = Date.now();
-    const requestId = `req-${startTime}-${Math.random()
-      .toString(36)
-      .substr(2, 9)}`;
+    const requestId = `req-${startTime}-${Math.random().toString(36).substr(2, 9)}`;
     const limit = parseInt(query.limit as string) || 50;
 
     console.log("\n📊 REST API: GET ALL PLAY HISTORY");
     console.log(`Request ID: ${requestId}`);
     console.log(`Limit: ${limit}`);
     console.log(
-      `IP: ${
-        request.headers.get("x-forwarded-for") ||
-        request.headers.get("host") ||
-        "unknown"
-      }`
+      `IP: ${request.headers.get("x-forwarded-for") || request.headers.get("host") || "unknown"}`
     );
 
     try {
@@ -569,18 +498,12 @@ export const rest = new Elysia()
   // Get play statistics
   .get("/play-stats", ({ request }) => {
     const startTime = Date.now();
-    const requestId = `req-${startTime}-${Math.random()
-      .toString(36)
-      .substr(2, 9)}`;
+    const requestId = `req-${startTime}-${Math.random().toString(36).substr(2, 9)}`;
 
     console.log("\n📈 REST API: GET PLAY STATISTICS");
     console.log(`Request ID: ${requestId}`);
     console.log(
-      `IP: ${
-        request.headers.get("x-forwarded-for") ||
-        request.headers.get("host") ||
-        "unknown"
-      }`
+      `IP: ${request.headers.get("x-forwarded-for") || request.headers.get("host") || "unknown"}`
     );
 
     try {
@@ -611,9 +534,7 @@ export const rest = new Elysia()
   // Get enhanced analytics with time filtering
   .get("/analytics", ({ query, request }) => {
     const startTime = Date.now();
-    const requestId = `req-${startTime}-${Math.random()
-      .toString(36)
-      .substr(2, 9)}`;
+    const requestId = `req-${startTime}-${Math.random().toString(36).substr(2, 9)}`;
 
     const timeFrame = (query.timeFrame as string) || "all";
     const limit = parseInt(query.limit as string) || 10;
@@ -623,11 +544,7 @@ export const rest = new Elysia()
     console.log(`Time Frame: ${timeFrame}`);
     console.log(`Limit: ${limit}`);
     console.log(
-      `IP: ${
-        request.headers.get("x-forwarded-for") ||
-        request.headers.get("host") ||
-        "unknown"
-      }`
+      `IP: ${request.headers.get("x-forwarded-for") || request.headers.get("host") || "unknown"}`
     );
 
     try {
@@ -659,20 +576,9 @@ export const rest = new Elysia()
           break;
       }
 
-      const stats = playHistoryDb.getPlayStatsForTimeRange(
-        startTimestamp,
-        endTimestamp
-      );
-      const topUsers = playHistoryDb.getTopUsersForTimeRange(
-        limit,
-        startTimestamp,
-        endTimestamp
-      );
-      const topSounds = playHistoryDb.getTopSoundsForTimeRange(
-        limit,
-        startTimestamp,
-        endTimestamp
-      );
+      const stats = playHistoryDb.getPlayStatsForTimeRange(startTimestamp, endTimestamp);
+      const topUsers = playHistoryDb.getTopUsersForTimeRange(limit, startTimestamp, endTimestamp);
+      const topSounds = playHistoryDb.getTopSoundsForTimeRange(limit, startTimestamp, endTimestamp);
       const hourlyStats = playHistoryDb.getHourlyPlayStats();
       const categoryStats = playHistoryDb.getCategoryStats();
       const dailyStats = playHistoryDb.getDailyPlayStats(30);
@@ -705,18 +611,12 @@ export const rest = new Elysia()
   // Get category statistics
   .get("/category-stats", ({ request }) => {
     const startTime = Date.now();
-    const requestId = `req-${startTime}-${Math.random()
-      .toString(36)
-      .substr(2, 9)}`;
+    const requestId = `req-${startTime}-${Math.random().toString(36).substr(2, 9)}`;
 
     console.log("\n🎭 REST API: GET CATEGORY STATISTICS");
     console.log(`Request ID: ${requestId}`);
     console.log(
-      `IP: ${
-        request.headers.get("x-forwarded-for") ||
-        request.headers.get("host") ||
-        "unknown"
-      }`
+      `IP: ${request.headers.get("x-forwarded-for") || request.headers.get("host") || "unknown"}`
     );
 
     try {
@@ -743,18 +643,12 @@ export const rest = new Elysia()
   // Get hourly activity stats
   .get("/hourly-stats", ({ request }) => {
     const startTime = Date.now();
-    const requestId = `req-${startTime}-${Math.random()
-      .toString(36)
-      .substr(2, 9)}`;
+    const requestId = `req-${startTime}-${Math.random().toString(36).substr(2, 9)}`;
 
     console.log("\n🕐 REST API: GET HOURLY STATISTICS");
     console.log(`Request ID: ${requestId}`);
     console.log(
-      `IP: ${
-        request.headers.get("x-forwarded-for") ||
-        request.headers.get("host") ||
-        "unknown"
-      }`
+      `IP: ${request.headers.get("x-forwarded-for") || request.headers.get("host") || "unknown"}`
     );
 
     try {
