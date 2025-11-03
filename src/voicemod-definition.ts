@@ -151,8 +151,8 @@ export const voicemodDefinitions = {
       filename: "86a15f20-5ce8-4b6f-9558-342e42ce07bd-1660491400741.mp3",
     },
     {
-      name: "Oh no! Cringe!",
-      filename: "11991ab9-9e05-41c9-b572-66950b90dbc9-1644098977332.mp31",
+      name: "Ty Curaku!",
+      filename: "593cec7d-33ed-4d1b-b62a-753910b82bd5-1675001715058.mp3",
     },
   ],
   references: [
