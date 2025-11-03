@@ -36,8 +36,12 @@ class PlayHistoryDatabase {
     this.db.run(createTableQuery);
 
     // Create index for better query performance
-    this.db.run("CREATE INDEX IF NOT EXISTS idx_username ON play_history(username);");
-    this.db.run("CREATE INDEX IF NOT EXISTS idx_timestamp ON play_history(timestamp);");
+    this.db.run(
+      "CREATE INDEX IF NOT EXISTS idx_username ON play_history(username);",
+    );
+    this.db.run(
+      "CREATE INDEX IF NOT EXISTS idx_timestamp ON play_history(timestamp);",
+    );
 
     console.log("✅ Play history database initialized");
   }
@@ -54,16 +58,21 @@ class PlayHistoryDatabase {
         record.filename,
         record.category,
         record.name,
-        record.timestamp
+        record.timestamp,
       ]);
 
-      console.log(`📝 Added play record: ${record.username} played ${record.name}`);
+      console.log(
+        `📝 Added play record: ${record.username} played ${record.name}`,
+      );
     } catch (error) {
       console.error("❌ Error adding play record:", error);
     }
   }
 
-  getUserPlayHistory(username: string, limit: number = 50): PlayHistoryRecord[] {
+  getUserPlayHistory(
+    username: string,
+    limit: number = 50,
+  ): PlayHistoryRecord[] {
     const query = `
       SELECT * FROM play_history
       WHERE username = ?
@@ -98,7 +107,9 @@ class PlayHistoryDatabase {
     }
   }
 
-  getTopUsers(limit: number = 10): Array<{ username: string; play_count: number }> {
+  getTopUsers(
+    limit: number = 10,
+  ): Array<{ username: string; play_count: number }> {
     const query = `
       SELECT username, COUNT(*) as play_count
       FROM play_history
@@ -109,7 +120,10 @@ class PlayHistoryDatabase {
 
     try {
       const stmt = this.db.prepare(query);
-      const results = stmt.all(limit) as Array<{ username: string; play_count: number }>;
+      const results = stmt.all(limit) as Array<{
+        username: string;
+        play_count: number;
+      }>;
       return results;
     } catch (error) {
       console.error("❌ Error fetching top users:", error);
@@ -117,7 +131,14 @@ class PlayHistoryDatabase {
     }
   }
 
-  getTopSounds(limit: number = 10): Array<{ name: string; filename: string; category: string; play_count: number }> {
+  getTopSounds(
+    limit: number = 10,
+  ): Array<{
+    name: string;
+    filename: string;
+    category: string;
+    play_count: number;
+  }> {
     const query = `
       SELECT name, filename, category, COUNT(*) as play_count
       FROM play_history
@@ -128,7 +149,12 @@ class PlayHistoryDatabase {
 
     try {
       const stmt = this.db.prepare(query);
-      const results = stmt.all(limit) as Array<{ name: string; filename: string; category: string; play_count: number }>;
+      const results = stmt.all(limit) as Array<{
+        name: string;
+        filename: string;
+        category: string;
+        play_count: number;
+      }>;
       return results;
     } catch (error) {
       console.error("❌ Error fetching top sounds:", error);
@@ -136,20 +162,33 @@ class PlayHistoryDatabase {
     }
   }
 
-  getPlayStats(): { total_plays: number; unique_users: number; unique_sounds: number } {
+  getPlayStats(): {
+    total_plays: number;
+    unique_users: number;
+    unique_sounds: number;
+  } {
     try {
-      const totalPlaysQuery = "SELECT COUNT(*) as total_plays FROM play_history";
-      const uniqueUsersQuery = "SELECT COUNT(DISTINCT username) as unique_users FROM play_history";
-      const uniqueSoundsQuery = "SELECT COUNT(DISTINCT filename || '-' || category) as unique_sounds FROM play_history";
+      const totalPlaysQuery =
+        "SELECT COUNT(*) as total_plays FROM play_history";
+      const uniqueUsersQuery =
+        "SELECT COUNT(DISTINCT username) as unique_users FROM play_history";
+      const uniqueSoundsQuery =
+        "SELECT COUNT(DISTINCT filename || '-' || category) as unique_sounds FROM play_history";
 
-      const totalPlays = (this.db.prepare(totalPlaysQuery).get() as { total_plays: number }).total_plays;
-      const uniqueUsers = (this.db.prepare(uniqueUsersQuery).get() as { unique_users: number }).unique_users;
-      const uniqueSounds = (this.db.prepare(uniqueSoundsQuery).get() as { unique_sounds: number }).unique_sounds;
+      const totalPlays = (
+        this.db.prepare(totalPlaysQuery).get() as { total_plays: number }
+      ).total_plays;
+      const uniqueUsers = (
+        this.db.prepare(uniqueUsersQuery).get() as { unique_users: number }
+      ).unique_users;
+      const uniqueSounds = (
+        this.db.prepare(uniqueSoundsQuery).get() as { unique_sounds: number }
+      ).unique_sounds;
 
       return {
         total_plays: totalPlays,
         unique_users: uniqueUsers,
-        unique_sounds: uniqueSounds
+        unique_sounds: uniqueSounds,
       };
     } catch (error) {
       console.error("❌ Error fetching play stats:", error);
@@ -157,7 +196,10 @@ class PlayHistoryDatabase {
     }
   }
 
-  getPlayStatsForTimeRange(startTimestamp?: number, endTimestamp?: number): { total_plays: number; unique_users: number; unique_sounds: number } {
+  getPlayStatsForTimeRange(
+    startTimestamp?: number,
+    endTimestamp?: number,
+  ): { total_plays: number; unique_users: number; unique_sounds: number } {
     try {
       let whereClause = "";
       const params: number[] = [];
@@ -177,14 +219,26 @@ class PlayHistoryDatabase {
       const uniqueUsersQuery = `SELECT COUNT(DISTINCT username) as unique_users FROM play_history ${whereClause}`;
       const uniqueSoundsQuery = `SELECT COUNT(DISTINCT filename || '-' || category) as unique_sounds FROM play_history ${whereClause}`;
 
-      const totalPlays = (this.db.prepare(totalPlaysQuery).get(...params) as { total_plays: number }).total_plays;
-      const uniqueUsers = (this.db.prepare(uniqueUsersQuery).get(...params) as { unique_users: number }).unique_users;
-      const uniqueSounds = (this.db.prepare(uniqueSoundsQuery).get(...params) as { unique_sounds: number }).unique_sounds;
+      const totalPlays = (
+        this.db.prepare(totalPlaysQuery).get(...params) as {
+          total_plays: number;
+        }
+      ).total_plays;
+      const uniqueUsers = (
+        this.db.prepare(uniqueUsersQuery).get(...params) as {
+          unique_users: number;
+        }
+      ).unique_users;
+      const uniqueSounds = (
+        this.db.prepare(uniqueSoundsQuery).get(...params) as {
+          unique_sounds: number;
+        }
+      ).unique_sounds;
 
       return {
         total_plays: totalPlays,
         unique_users: uniqueUsers,
-        unique_sounds: uniqueSounds
+        unique_sounds: uniqueSounds,
       };
     } catch (error) {
       console.error("❌ Error fetching time-range play stats:", error);
@@ -192,7 +246,11 @@ class PlayHistoryDatabase {
     }
   }
 
-  getTopUsersForTimeRange(limit: number = 10, startTimestamp?: number, endTimestamp?: number): Array<{ username: string; play_count: number }> {
+  getTopUsersForTimeRange(
+    limit: number = 10,
+    startTimestamp?: number,
+    endTimestamp?: number,
+  ): Array<{ username: string; play_count: number }> {
     try {
       let whereClause = "";
       const params: (number | string)[] = [];
@@ -220,7 +278,10 @@ class PlayHistoryDatabase {
       `;
 
       const stmt = this.db.prepare(query);
-      const results = stmt.all(...params) as Array<{ username: string; play_count: number }>;
+      const results = stmt.all(...params) as Array<{
+        username: string;
+        play_count: number;
+      }>;
       return results;
     } catch (error) {
       console.error("❌ Error fetching top users for time range:", error);
@@ -228,7 +289,16 @@ class PlayHistoryDatabase {
     }
   }
 
-  getTopSoundsForTimeRange(limit: number = 10, startTimestamp?: number, endTimestamp?: number): Array<{ name: string; filename: string; category: string; play_count: number }> {
+  getTopSoundsForTimeRange(
+    limit: number = 10,
+    startTimestamp?: number,
+    endTimestamp?: number,
+  ): Array<{
+    name: string;
+    filename: string;
+    category: string;
+    play_count: number;
+  }> {
     try {
       let whereClause = "";
       const params: (number | string)[] = [];
@@ -256,7 +326,12 @@ class PlayHistoryDatabase {
       `;
 
       const stmt = this.db.prepare(query);
-      const results = stmt.all(...params) as Array<{ name: string; filename: string; category: string; play_count: number }>;
+      const results = stmt.all(...params) as Array<{
+        name: string;
+        filename: string;
+        category: string;
+        play_count: number;
+      }>;
       return results;
     } catch (error) {
       console.error("❌ Error fetching top sounds for time range:", error);
@@ -279,8 +354,11 @@ class PlayHistoryDatabase {
       const results = stmt.all() as Array<{ hour: number; play_count: number }>;
 
       // Fill in missing hours with 0
-      const hourlyStats = Array.from({ length: 24 }, (_, i) => ({ hour: i, play_count: 0 }));
-      results.forEach(result => {
+      const hourlyStats = Array.from({ length: 24 }, (_, i) => ({
+        hour: i,
+        play_count: 0,
+      }));
+      results.forEach((result) => {
         hourlyStats[result.hour].play_count = result.play_count;
       });
 
@@ -291,7 +369,11 @@ class PlayHistoryDatabase {
     }
   }
 
-  getCategoryStats(): Array<{ category: string; play_count: number; unique_sounds: number }> {
+  getCategoryStats(): Array<{
+    category: string;
+    play_count: number;
+    unique_sounds: number;
+  }> {
     try {
       const query = `
         SELECT
@@ -304,7 +386,11 @@ class PlayHistoryDatabase {
       `;
 
       const stmt = this.db.prepare(query);
-      const results = stmt.all() as Array<{ category: string; play_count: number; unique_sounds: number }>;
+      const results = stmt.all() as Array<{
+        category: string;
+        play_count: number;
+        unique_sounds: number;
+      }>;
       return results;
     } catch (error) {
       console.error("❌ Error fetching category stats:", error);
@@ -312,9 +398,11 @@ class PlayHistoryDatabase {
     }
   }
 
-  getDailyPlayStats(days: number = 30): Array<{ date: string; play_count: number }> {
+  getDailyPlayStats(
+    days: number = 30,
+  ): Array<{ date: string; play_count: number }> {
     try {
-      const startTimestamp = Date.now() - (days * 24 * 60 * 60 * 1000);
+      const startTimestamp = Date.now() - days * 24 * 60 * 60 * 1000;
 
       const query = `
         SELECT
@@ -327,7 +415,10 @@ class PlayHistoryDatabase {
       `;
 
       const stmt = this.db.prepare(query);
-      const results = stmt.all(startTimestamp) as Array<{ date: string; play_count: number }>;
+      const results = stmt.all(startTimestamp) as Array<{
+        date: string;
+        play_count: number;
+      }>;
       return results;
     } catch (error) {
       console.error("❌ Error fetching daily play stats:", error);

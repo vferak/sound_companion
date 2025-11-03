@@ -1,1110 +1,1173 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sound Companion - Sender</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
+          Cantarell, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
 
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+      }
 
-        .header {
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      .header {
+        background: rgba(255, 255, 255, 0.98);
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      .header h1 {
+        font-size: 2.5rem;
+        color: #333;
+        margin-bottom: 10px;
+      }
+
+      .header .subtitle {
+        color: #666;
+        font-size: 1.1rem;
+      }
+
+      .stats-bar {
+        display: flex;
+        gap: 30px;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #e5e7eb;
+      }
+
+      .stat-item {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .stat-value {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #667eea;
+      }
+
+      .stat-label {
+        font-size: 0.9rem;
+        color: #999;
+        text-transform: uppercase;
+      }
+
+      .controls {
+        background: rgba(255, 255, 255, 0.98);
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+      }
+
+      .search-container {
+        position: relative;
+        margin-bottom: 15px;
+      }
+
+      .search-input {
+        width: 100%;
+        padding: 12px 40px 12px 15px;
+        border: 2px solid #e5e7eb;
+        border-radius: 10px;
+        font-size: 16px;
+        transition: all 0.3s;
+      }
+
+      .search-input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+
+      .search-icon {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #999;
+      }
+
+      .filter-buttons {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .filter-btn {
+        padding: 8px 16px;
+        border: 2px solid #e5e7eb;
+        background: white;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      .filter-btn:hover {
+        border-color: #667eea;
+        background: #f8f9ff;
+      }
+
+      .filter-btn.active {
+        background: #667eea;
+        color: white;
+        border-color: #667eea;
+      }
+
+      .tiles-container {
+        background: rgba(255, 255, 255, 0.98);
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+      }
+
+      .tiles-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 12px;
+      }
+
+      .sound-tile {
+        background: white;
+        border: 2px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 15px;
+        cursor: pointer;
+        transition: all 0.3s;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .sound-tile:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border-color: #667eea;
+      }
+
+      .sound-tile.playing {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+
+      .sound-tile.playing::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.3),
+          transparent
+        );
+        animation: shimmer 1.5s infinite;
+      }
+
+      @keyframes shimmer {
+        0% {
+          left: -100%;
+        }
+        100% {
+          left: 100%;
+        }
+      }
+
+      .sound-tile .icon {
+        font-size: 2rem;
+        margin-bottom: 10px;
+        text-align: center;
+      }
+
+      .sound-tile .name {
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin-bottom: 5px;
+        line-height: 1.3;
+      }
+
+      .sound-tile.playing .name {
+        color: white;
+      }
+
+      .sound-tile .filename {
+        font-size: 0.75rem;
+        color: #999;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .sound-tile.playing .filename {
+        color: rgba(255, 255, 255, 0.8);
+      }
+
+      .sound-tile .play-indicator {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        opacity: 0;
+        transition: opacity 0.3s;
+        font-size: 1.2rem;
+      }
+
+      .sound-tile .shortcut-badge {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: rgba(102, 126, 234, 0.9);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        pointer-events: none;
+        z-index: 10;
+      }
+
+      .sound-tile.playing .shortcut-badge {
+        background: rgba(255, 255, 255, 0.3);
+        color: white;
+      }
+
+      .sound-tile.playing .play-indicator {
+        opacity: 1;
+        animation: pulse 1s infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.2);
+        }
+      }
+
+      .status-bar {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(255, 255, 255, 0.95);
+        padding: 10px 20px;
+        border-radius: 30px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        z-index: 1000;
+      }
+
+      .status-indicator {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #999;
+      }
+
+      .status-indicator.online {
+        background: #48bb78;
+        animation: pulse-status 2s infinite;
+      }
+
+      @keyframes pulse-status {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+
+      .status-text {
+        font-size: 0.9rem;
+        color: #666;
+      }
+
+      .toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #333;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        transform: translateX(400px);
+        transition: transform 0.3s;
+        z-index: 2000;
+        max-width: 300px;
+      }
+
+      .toast.show {
+        transform: translateX(0);
+      }
+
+      .toast.error {
+        background: #f56565;
+      }
+
+      .toast.success {
+        background: #48bb78;
+      }
+
+      .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+      }
+
+      .loading-overlay.show {
+        display: flex;
+      }
+
+      .loading-spinner {
+        width: 50px;
+        height: 50px;
+        border: 4px solid #fff;
+        border-top-color: transparent;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .no-results {
+        text-align: center;
+        padding: 40px;
+        color: #999;
+        display: none;
+      }
+
+      /* Play History Styles */
+      .play-history-section {
+        margin-top: 40px;
+        padding: 20px 0;
+        border-top: 1px solid #333;
+      }
+
+      .play-history-section .header h2 {
+        margin: 0 0 10px 0;
+        font-size: 1.5rem;
+      }
+
+      .play-history-section .subtitle {
+        color: #999;
+        margin-bottom: 20px;
+      }
+
+      .history-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+
+      .history-column {
+        min-width: 0;
+      }
+
+      .history-column h3 {
+        margin: 0 0 15px 0;
+        color: #fff;
+        font-size: 1.2rem;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #333;
+      }
+
+      .history-list {
+        max-height: 400px;
+        overflow-y: auto;
+        border: 1px solid #333;
+        border-radius: 8px;
+        background: #1a1a1a;
+      }
+
+      .history-item {
+        display: flex;
+        align-items: center;
+        padding: 12px 16px;
+        border-bottom: 1px solid #333;
+        transition: background 0.2s ease;
+      }
+
+      .history-item:last-child {
+        border-bottom: none;
+      }
+
+      .history-item:hover {
+        background: #2a2a2a;
+      }
+
+      .history-item .icon {
+        font-size: 1.2rem;
+        margin-right: 12px;
+        opacity: 0.7;
+      }
+
+      .history-item .details {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .history-item .name {
+        color: #fff;
+        font-weight: 500;
+        margin-bottom: 4px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .history-item .meta {
+        color: #999;
+        font-size: 0.85rem;
+        display: flex;
+        gap: 8px;
+      }
+
+      .history-item .category {
+        background: #333;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+      }
+
+      .history-item .timestamp {
+        margin-left: auto;
+        color: #666;
+        font-size: 0.8rem;
+      }
+
+      .history-empty {
+        text-align: center;
+        padding: 40px;
+        color: #999;
+      }
+
+      /* Username Management */
+      .username-display {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        background: #333;
+        padding: 8px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        color: #fff;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .username-display .change-user-btn {
+        background: #666;
+        border: none;
+        color: #fff;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: background 0.2s ease;
+      }
+
+      .username-display .change-user-btn:hover {
+        background: #777;
+      }
+
+      footer {
+        text-align: center;
+        padding-bottom: 5rem;
+        padding-top: 2rem;
+        color: #999;
+        font-size: 0.9rem;
+        border-top: 1px solid #333;
+      }
+
+      @media (max-width: 768px) {
+        .tiles-grid {
+          grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
         }
 
         .header h1 {
-            font-size: 2.5rem;
-            color: #333;
-            margin-bottom: 10px;
-        }
-
-        .header .subtitle {
-            color: #666;
-            font-size: 1.1rem;
-        }
-
-        .stats-bar {
-            display: flex;
-            gap: 30px;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #e5e7eb;
-        }
-
-        .stat-item {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #667eea;
-        }
-
-        .stat-label {
-            font-size: 0.9rem;
-            color: #999;
-            text-transform: uppercase;
+          font-size: 1.8rem;
         }
 
         .controls {
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-        }
-
-        .search-container {
-            position: relative;
-            margin-bottom: 15px;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 12px 40px 12px 15px;
-            border: 2px solid #e5e7eb;
-            border-radius: 10px;
-            font-size: 16px;
-            transition: all 0.3s;
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .search-icon {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #999;
-        }
-
-        .filter-buttons {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .filter-btn {
-            padding: 8px 16px;
-            border: 2px solid #e5e7eb;
-            background: white;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .filter-btn:hover {
-            border-color: #667eea;
-            background: #f8f9ff;
-        }
-
-        .filter-btn.active {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
+          flex-direction: column;
+          gap: 15px;
         }
 
         .tiles-container {
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-        }
-
-        .tiles-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 12px;
-        }
-
-        .sound-tile {
-            background: white;
-            border: 2px solid #e5e7eb;
-            border-radius: 10px;
-            padding: 15px;
-            cursor: pointer;
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .sound-tile:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            border-color: #667eea;
-        }
-
-        .sound-tile.playing {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .sound-tile.playing::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            animation: shimmer 1.5s infinite;
-        }
-
-        @keyframes shimmer {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
-
-        .sound-tile .icon {
-            font-size: 2rem;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-
-        .sound-tile .name {
-            font-size: 0.9rem;
-            font-weight: 500;
-            margin-bottom: 5px;
-            line-height: 1.3;
-        }
-
-        .sound-tile.playing .name {
-            color: white;
-        }
-
-        .sound-tile .filename {
-            font-size: 0.75rem;
-            color: #999;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .sound-tile.playing .filename {
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        .sound-tile .play-indicator {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            opacity: 0;
-            transition: opacity 0.3s;
-            font-size: 1.2rem;
-        }
-
-        .sound-tile .shortcut-badge {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            background: rgba(102, 126, 234, 0.9);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            pointer-events: none;
-            z-index: 10;
-        }
-
-        .sound-tile.playing .shortcut-badge {
-            background: rgba(255, 255, 255, 0.3);
-            color: white;
-        }
-
-        .sound-tile.playing .play-indicator {
-            opacity: 1;
-            animation: pulse 1s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-        }
-
-        .status-bar {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.95);
-            padding: 10px 20px;
-            border-radius: 30px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            z-index: 1000;
-        }
-
-        .status-indicator {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #999;
-        }
-
-        .status-indicator.online {
-            background: #48bb78;
-            animation: pulse-status 2s infinite;
-        }
-
-        @keyframes pulse-status {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .status-text {
-            font-size: 0.9rem;
-            color: #666;
-        }
-
-        .toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #333;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            transform: translateX(400px);
-            transition: transform 0.3s;
-            z-index: 2000;
-            max-width: 300px;
-        }
-
-        .toast.show {
-            transform: translateX(0);
-        }
-
-        .toast.error {
-            background: #f56565;
-        }
-
-        .toast.success {
-            background: #48bb78;
-        }
-
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-        }
-
-        .loading-overlay.show {
-            display: flex;
-        }
-
-        .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid #fff;
-            border-top-color: transparent;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .no-results {
-            text-align: center;
-            padding: 40px;
-            color: #999;
-            display: none;
-        }
-
-        /* Play History Styles */
-        .play-history-section {
-            margin-top: 40px;
-            padding: 20px 0;
-            border-top: 1px solid #333;
-        }
-
-        .play-history-section .header h2 {
-            margin: 0 0 10px 0;
-            font-size: 1.5rem;
-        }
-
-        .play-history-section .subtitle {
-            color: #999;
-            margin-bottom: 20px;
+          padding: 15px;
         }
 
         .history-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
+          grid-template-columns: 1fr;
+          gap: 15px;
         }
 
-        .history-column {
-            min-width: 0;
-        }
-
-        .history-column h3 {
-            margin: 0 0 15px 0;
-            color: #fff;
-            font-size: 1.2rem;
-            padding-bottom: 8px;
-            border-bottom: 2px solid #333;
-        }
-
-        .history-list {
-            max-height: 400px;
-            overflow-y: auto;
-            border: 1px solid #333;
-            border-radius: 8px;
-            background: #1a1a1a;
-        }
-
-        .history-item {
-            display: flex;
-            align-items: center;
-            padding: 12px 16px;
-            border-bottom: 1px solid #333;
-            transition: background 0.2s ease;
-        }
-
-        .history-item:last-child {
-            border-bottom: none;
-        }
-
-        .history-item:hover {
-            background: #2a2a2a;
-        }
-
-        .history-item .icon {
-            font-size: 1.2rem;
-            margin-right: 12px;
-            opacity: 0.7;
-        }
-
-        .history-item .details {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .history-item .name {
-            color: #fff;
-            font-weight: 500;
-            margin-bottom: 4px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .history-item .meta {
-            color: #999;
-            font-size: 0.85rem;
-            display: flex;
-            gap: 8px;
-        }
-
-        .history-item .category {
-            background: #333;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-        }
-
-        .history-item .timestamp {
-            margin-left: auto;
-            color: #666;
-            font-size: 0.8rem;
-        }
-
-        .history-empty {
-            text-align: center;
-            padding: 40px;
-            color: #999;
-        }
-
-        /* Username Management */
         .username-display {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            background: #333;
-            padding: 8px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            color: #fff;
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+          position: relative;
+          top: auto;
+          right: auto;
+          margin-bottom: 10px;
+          justify-content: center;
         }
-
-        .username-display .change-user-btn {
-            background: #666;
-            border: none;
-            color: #fff;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            cursor: pointer;
-            transition: background 0.2s ease;
-        }
-
-        .username-display .change-user-btn:hover {
-            background: #777;
-        }
-
-        footer {
-            text-align: center;
-            padding-bottom: 5rem;
-            padding-top: 2rem;
-            color: #999;
-            font-size: 0.9rem;
-            border-top: 1px solid #333;
-        }
-
-        @media (max-width: 768px) {
-            .tiles-grid {
-                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            }
-
-            .header h1 {
-                font-size: 1.8rem;
-            }
-
-            .controls {
-                flex-direction: column;
-                gap: 15px;
-            }
-
-            .tiles-container {
-                padding: 15px;
-            }
-
-            .history-container {
-                grid-template-columns: 1fr;
-                gap: 15px;
-            }
-
-            .username-display {
-                position: relative;
-                top: auto;
-                right: auto;
-                margin-bottom: 10px;
-                justify-content: center;
-            }
-        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <!-- Username Display -->
-    <div class="username-display" id="usernameDisplay" style="display: none;">
-        <span>👤 <span id="currentUsernameText">User</span></span>
-        <button class="change-user-btn" onclick="changeUsername()">Change</button>
+    <div class="username-display" id="usernameDisplay" style="display: none">
+      <span>👤 <span id="currentUsernameText">User</span></span>
+      <button class="change-user-btn" onclick="changeUsername()">Change</button>
     </div>
 
     <div class="container">
-        <div class="header">
-            <h1>🎵 Sound Companion</h1>
-            <div class="subtitle">Send sounds to connected clients</div>
+      <div class="header">
+        <h1>🎵 Sound Companion</h1>
+        <div class="subtitle">Send sounds to connected clients</div>
 
-            <div class="stats-bar">
-                <div class="stat-item">
-                    <div class="stat-value" id="totalSounds">0</div>
-                    <div class="stat-label">Total Sounds</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="playCount">0</div>
-                    <div class="stat-label">Played</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="recentCount">0</div>
-                    <div class="stat-label">Recent</div>
-                </div>
-            </div>
+        <div class="stats-bar">
+          <div class="stat-item">
+            <div class="stat-value" id="totalSounds">0</div>
+            <div class="stat-label">Total Sounds</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="playCount">0</div>
+            <div class="stat-label">Played</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="recentCount">0</div>
+            <div class="stat-label">Recent</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="search-container">
+          <span class="search-icon">🔍</span>
+          <input
+            type="text"
+            class="search-input"
+            id="searchInput"
+            placeholder="Search sounds... Cmd+K/Ctrl+K to focus search and select text"
+            autocomplete="off"
+          />
         </div>
 
-        <div class="controls">
-            <div class="search-container">
-                <span class="search-icon">🔍</span>
-                <input
-                    type="text"
-                    class="search-input"
-                    id="searchInput"
-                    placeholder="Search sounds... Cmd+K/Ctrl+K to focus search and select text"
-                    autocomplete="off"
-                >
-            </div>
-
-            <div class="filter-buttons" id="filterButtons">
-                <button class="filter-btn active" data-filter="all">All</button>
-                <button class="filter-btn" data-filter="recent">Recent</button>
-            </div>
+        <div class="filter-buttons" id="filterButtons">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="recent">Recent</button>
         </div>
+      </div>
 
-        <div class="tiles-container">
-            <div class="tiles-grid" id="tilesGrid">
-                <!-- Tiles will be rendered here -->
-            </div>
-            <div class="no-results" id="noResults">
-                No sounds found matching your search
-            </div>
+      <div class="tiles-container">
+        <div class="tiles-grid" id="tilesGrid">
+          <!-- Tiles will be rendered here -->
         </div>
+        <div class="no-results" id="noResults">
+          No sounds found matching your search
+        </div>
+      </div>
     </div>
 
     <div class="status-bar">
-        <div class="status-indicator" id="statusIndicator"></div>
-        <div class="status-text" id="statusText">Connecting...</div>
+      <div class="status-indicator" id="statusIndicator"></div>
+      <div class="status-text" id="statusText">Connecting...</div>
     </div>
 
-    <div class="no-results" id="noResults" style="display: none;">
-        No sounds found matching your criteria.
+    <div class="no-results" id="noResults" style="display: none">
+      No sounds found matching your criteria.
     </div>
 
     <!-- Play History Section -->
-    <div class="play-history-section" id="playHistorySection" style="display: none;">
-        <div class="container">
-            <div class="header">
-                <h2>Play History</h2>
-                <div class="subtitle">Recent sound activity</div>
-            </div>
-            <div class="history-container">
-                <div class="history-column">
-                    <h3>Your History</h3>
-                    <div class="history-list" id="userHistoryList">
-                        <!-- User history items will be inserted here -->
-                    </div>
-                </div>
-                <div class="history-column">
-                    <h3>All Activity</h3>
-                    <div class="history-list" id="allHistoryList">
-                        <!-- All history items will be inserted here -->
-                    </div>
-                </div>
-            </div>
+    <div
+      class="play-history-section"
+      id="playHistorySection"
+      style="display: none"
+    >
+      <div class="container">
+        <div class="header">
+          <h2>Play History</h2>
+          <div class="subtitle">Recent sound activity</div>
         </div>
+        <div class="history-container">
+          <div class="history-column">
+            <h3>Your History</h3>
+            <div class="history-list" id="userHistoryList">
+              <!-- User history items will be inserted here -->
+            </div>
+          </div>
+          <div class="history-column">
+            <h3>All Activity</h3>
+            <div class="history-list" id="allHistoryList">
+              <!-- All history items will be inserted here -->
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="toast" id="toast"></div>
 
     <div class="loading-overlay" id="loadingOverlay">
-        <div class="loading-spinner"></div>
+      <div class="loading-spinner"></div>
     </div>
 
     <footer id="footer">
-        Sound Companion v<span id="version">1.0.50</span>
+      Sound Companion v<span id="version">1.0.50</span>
     </footer>
 
     <script>
-        // Configuration
-        // Dynamically construct the server URL from the current page location
-        const getServerUrl = () => {
-            const protocol = window.location.protocol;
-            const hostname = window.location.hostname;
-            const port = window.location.port ? `:${window.location.port}` : '';
-            return `${protocol}//${hostname}${port}`;
-        };
-        const SERVER_URL = getServerUrl();
+      // Configuration
+      // Dynamically construct the server URL from the current page location
+      const getServerUrl = () => {
+        const protocol = window.location.protocol;
+        const hostname = window.location.hostname;
+        const port = window.location.port ? `:${window.location.port}` : "";
+        return `${protocol}//${hostname}${port}`;
+      };
+      const SERVER_URL = getServerUrl();
 
+      // State
+      let soundDefinitions = null;
+      let allTiles = [];
+      let playCount = 0;
+      let recentlyPlayed = [];
+      let currentUsername = null;
+      let userPlayHistory = [];
+      let allPlayHistory = [];
 
-        // State
-        let soundDefinitions = null;
-        let allTiles = [];
-        let playCount = 0;
-        let recentlyPlayed = [];
-        let currentUsername = null;
-        let userPlayHistory = [];
-        let allPlayHistory = [];
+      let currentFilter = "all";
+      let searchTerm = "";
 
-        let currentFilter = 'all';
-        let searchTerm = '';
+      // Initialize the application
+      async function init() {
+        console.log("Initializing Sound Companion...");
 
-        // Initialize the application
-        async function init() {
-            console.log('Initializing Sound Companion...');
+        // Show loading
+        showLoading(true);
 
-            // Show loading
-            showLoading(true);
+        try {
+          // Check and prompt for username
+          await checkUsername();
 
-            try {
-                // Check and prompt for username
-                await checkUsername();
+          // Load sound definitions from API
+          await loadSoundDefinitions();
 
-                // Load sound definitions from API
-                await loadSoundDefinitions();
+          // Setup UI
+          setupEventListeners();
+          renderTiles();
+          updateStats();
 
-                // Setup UI
-                setupEventListeners();
-                renderTiles();
-                updateStats();
+          // Load play history
+          await loadPlayHistory();
 
-                // Load play history
-                await loadPlayHistory();
+          // Setup websocket for real-time updates
+          setupWebSocketListener();
 
-                // Setup websocket for real-time updates
-                setupWebSocketListener();
+          // Start server status monitoring
+          checkServerStatus();
+          setInterval(checkServerStatus, 5000);
 
-                // Start server status monitoring
-                checkServerStatus();
-                setInterval(checkServerStatus, 5000);
+          console.log("Initialization complete");
+        } catch (error) {
+          console.error("Initialization failed:", error);
+          showToast("Failed to initialize. Please refresh the page.", "error");
+        } finally {
+          // Always hide loading
+          showLoading(false);
+        }
+      }
 
-                console.log('Initialization complete');
-            } catch (error) {
-                console.error('Initialization failed:', error);
-                showToast('Failed to initialize. Please refresh the page.', 'error');
-            } finally {
-                // Always hide loading
-                showLoading(false);
+      // Check if username exists in localStorage, prompt if not
+      async function checkUsername() {
+        currentUsername = localStorage.getItem("soundCompanionUsername");
+
+        if (!currentUsername) {
+          while (!currentUsername || currentUsername.trim() === "") {
+            currentUsername = prompt("Please enter your username:");
+            if (currentUsername === null) {
+              // User cancelled, use a default
+              currentUsername = "Anonymous";
+              break;
             }
+            currentUsername = currentUsername.trim();
+          }
+
+          localStorage.setItem("soundCompanionUsername", currentUsername);
+          showToast(`Welcome, ${currentUsername}!`);
         }
 
-        // Check if username exists in localStorage, prompt if not
-        async function checkUsername() {
-            currentUsername = localStorage.getItem('soundCompanionUsername');
+        // Update username display
+        updateUsernameDisplay();
+        console.log(`Current user: ${currentUsername}`);
+      }
 
-            if (!currentUsername) {
-                while (!currentUsername || currentUsername.trim() === '') {
-                    currentUsername = prompt('Please enter your username:');
-                    if (currentUsername === null) {
-                        // User cancelled, use a default
-                        currentUsername = 'Anonymous';
-                        break;
-                    }
-                    currentUsername = currentUsername.trim();
-                }
+      // Load sound definitions from the API
+      async function loadSoundDefinitions() {
+        try {
+          const response = await fetch(`${SERVER_URL}/sound-definitions`);
 
-                localStorage.setItem('soundCompanionUsername', currentUsername);
-                showToast(`Welcome, ${currentUsername}!`);
-            }
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
 
-            // Update username display
-            updateUsernameDisplay();
-            console.log(`Current user: ${currentUsername}`);
-        }
+          const data = await response.json();
 
-        // Load sound definitions from the API
-        async function loadSoundDefinitions() {
-            try {
-                const response = await fetch(`${SERVER_URL}/sound-definitions`);
+          if (data.success && data.definitions) {
+            soundDefinitions = data.definitions;
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
+            // Combine all tiles from all categories
+            allTiles = [];
 
-                const data = await response.json();
-
-                if (data.success && data.definitions) {
-                    soundDefinitions = data.definitions;
-
-                    // Combine all tiles from all categories
-                    allTiles = [];
-
-                    Object.entries(soundDefinitions).forEach(([category, def]) => {
-                        if (def.tiles && Array.isArray(def.tiles)) {
-                            def.tiles.forEach(tile => {
-                                allTiles.push({
-                                    ...tile,
-                                    category: category,
-                                    categoryName: def.name || category
-                                });
-                            });
-                        }
-                    });
-
-                    console.log(`Loaded ${allTiles.length} sounds from ${Object.keys(soundDefinitions).length} categories`);
-
-                    // Update filter buttons with categories
-                    updateFilterButtons();
-                } else {
-                    throw new Error('Invalid data structure received');
-                }
-            } catch (error) {
-                console.error('Failed to load sound definitions:', error);
-
-                // Fallback to empty state
-                soundDefinitions = {};
-                allTiles = [];
-
-                showToast('Failed to load sounds. Please check server connection.', 'error');
-            }
-        }
-
-        // Update filter buttons with available categories
-        function updateFilterButtons() {
-            const filterButtons = document.getElementById('filterButtons');
-            if (!filterButtons) return;
-
-            const buttons = ['<button class="filter-btn active" data-filter="all">All</button>'];
-
-            if (soundDefinitions) {
-                Object.entries(soundDefinitions).forEach(([key, def]) => {
-                    if (def.tiles && def.tiles.length > 0) {
-                        buttons.push(`<button class="filter-btn" data-filter="${key}">${def.shortName || def.name} (${def.tiles.length})</button>`);
-                    }
+            Object.entries(soundDefinitions).forEach(([category, def]) => {
+              if (def.tiles && Array.isArray(def.tiles)) {
+                def.tiles.forEach((tile) => {
+                  allTiles.push({
+                    ...tile,
+                    category: category,
+                    categoryName: def.name || category,
+                  });
                 });
-            }
-
-            buttons.push('<button class="filter-btn" data-filter="recent">Recent</button>');
-
-            filterButtons.innerHTML = buttons.join('');
-
-            // Re-attach event listeners to new buttons
-            filterButtons.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.addEventListener('click', handleFilterClick);
+              }
             });
+
+            console.log(
+              `Loaded ${allTiles.length} sounds from ${Object.keys(soundDefinitions).length} categories`,
+            );
+
+            // Update filter buttons with categories
+            updateFilterButtons();
+          } else {
+            throw new Error("Invalid data structure received");
+          }
+        } catch (error) {
+          console.error("Failed to load sound definitions:", error);
+
+          // Fallback to empty state
+          soundDefinitions = {};
+          allTiles = [];
+
+          showToast(
+            "Failed to load sounds. Please check server connection.",
+            "error",
+          );
+        }
+      }
+
+      // Update filter buttons with available categories
+      function updateFilterButtons() {
+        const filterButtons = document.getElementById("filterButtons");
+        if (!filterButtons) return;
+
+        const buttons = [
+          '<button class="filter-btn active" data-filter="all">All</button>',
+        ];
+
+        if (soundDefinitions) {
+          Object.entries(soundDefinitions).forEach(([key, def]) => {
+            if (def.tiles && def.tiles.length > 0) {
+              buttons.push(
+                `<button class="filter-btn" data-filter="${key}">${def.shortName || def.name} (${def.tiles.length})</button>`,
+              );
+            }
+          });
         }
 
-        // Handle filter button clicks
-        function handleFilterClick(e) {
-            const btn = e.target;
-            const filter = btn.dataset.filter;
+        buttons.push(
+          '<button class="filter-btn" data-filter="recent">Recent</button>',
+        );
 
-            // Update active state
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+        filterButtons.innerHTML = buttons.join("");
 
-            // Clear search input when switching tabs
-            const searchInput = document.getElementById('searchInput');
-            if (searchInput) {
-                searchInput.value = '';
-                searchTerm = '';
+        // Re-attach event listeners to new buttons
+        filterButtons.querySelectorAll(".filter-btn").forEach((btn) => {
+          btn.addEventListener("click", handleFilterClick);
+        });
+      }
+
+      // Handle filter button clicks
+      function handleFilterClick(e) {
+        const btn = e.target;
+        const filter = btn.dataset.filter;
+
+        // Update active state
+        document
+          .querySelectorAll(".filter-btn")
+          .forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        // Clear search input when switching tabs
+        const searchInput = document.getElementById("searchInput");
+        if (searchInput) {
+          searchInput.value = "";
+          searchTerm = "";
+        }
+
+        currentFilter = filter;
+        renderTiles();
+      }
+
+      // Setup event listeners
+      function setupEventListeners() {
+        // Search input
+        const searchInput = document.getElementById("searchInput");
+        if (searchInput) {
+          searchInput.addEventListener("input", (e) => {
+            searchTerm = e.target.value;
+            // When user starts typing, switch to "All" tab
+            if (searchTerm && currentFilter !== "all") {
+              currentFilter = "all";
+              document
+                .querySelectorAll(".filter-btn")
+                .forEach((b) => b.classList.remove("active"));
+              document
+                .querySelector('[data-filter="all"]')
+                ?.classList.add("active");
             }
-
-            currentFilter = filter;
             renderTiles();
+          });
         }
 
-        // Setup event listeners
-        function setupEventListeners() {
-            // Search input
-            const searchInput = document.getElementById('searchInput');
-            if (searchInput) {
-                searchInput.addEventListener('input', (e) => {
-                    searchTerm = e.target.value;
-                    // When user starts typing, switch to "All" tab
-                    if (searchTerm && currentFilter !== 'all') {
-                        currentFilter = 'all';
-                        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                        document.querySelector('[data-filter="all"]')?.classList.add('active');
-                    }
-                    renderTiles();
-                });
-            }
-
-            // Tile clicks (delegated)
-            const tilesGrid = document.getElementById('tilesGrid');
-            if (tilesGrid) {
-                tilesGrid.addEventListener('click', handleTileClick);
-            }
-
-            // Keyboard shortcuts
-            document.addEventListener('keydown', (e) => {
-                // Cmd+K (Mac) or Ctrl+K (other platforms) to focus search and select text
-                if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
-                    e.preventDefault();
-                    searchInput?.focus();
-                    searchInput?.select();
-                    return;
-                }
-
-                if (e.key === '/' && document.activeElement !== searchInput) {
-                    e.preventDefault();
-                    searchInput?.focus();
-                }
-
-                if (e.key === 'Escape' && document.activeElement === searchInput) {
-                    searchInput.blur();
-                }
-
-                // Number shortcuts (1-5) for playing first 5 tiles
-                if (document.activeElement !== searchInput && ['1', '2', '3', '4', '5','6','7','8','9'].includes(e.key)) {
-                    e.preventDefault();
-                    const shortcutNum = parseInt(e.key);
-                    const tile = document.querySelector('[data-shortcut="' + shortcutNum + '"]');
-                    if (tile) {
-                        tile.click();
-                    }
-                }
-            });
+        // Tile clicks (delegated)
+        const tilesGrid = document.getElementById("tilesGrid");
+        if (tilesGrid) {
+          tilesGrid.addEventListener("click", handleTileClick);
         }
 
-        // Handle tile clicks
-        async function handleTileClick(e) {
-            const tile = e.target.closest('.sound-tile');
-            if (!tile) return;
+        // Keyboard shortcuts
+        document.addEventListener("keydown", (e) => {
+          // Cmd+K (Mac) or Ctrl+K (other platforms) to focus search and select text
+          if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+            e.preventDefault();
+            searchInput?.focus();
+            searchInput?.select();
+            return;
+          }
 
-            const filename = tile.dataset.filename;
-            const category = tile.dataset.category;
-            const name = tile.dataset.name;
+          if (e.key === "/" && document.activeElement !== searchInput) {
+            e.preventDefault();
+            searchInput?.focus();
+          }
 
-            await playSound(filename, category, name, tile);
+          if (e.key === "Escape" && document.activeElement === searchInput) {
+            searchInput.blur();
+          }
+
+          // Number shortcuts (1-5) for playing first 5 tiles
+          if (
+            document.activeElement !== searchInput &&
+            ["1", "2", "3", "4", "5", "6", "7", "8", "9"].includes(e.key)
+          ) {
+            e.preventDefault();
+            const shortcutNum = parseInt(e.key);
+            const tile = document.querySelector(
+              '[data-shortcut="' + shortcutNum + '"]',
+            );
+            if (tile) {
+              tile.click();
+            }
+          }
+        });
+      }
+
+      // Handle tile clicks
+      async function handleTileClick(e) {
+        const tile = e.target.closest(".sound-tile");
+        if (!tile) return;
+
+        const filename = tile.dataset.filename;
+        const category = tile.dataset.category;
+        const name = tile.dataset.name;
+
+        await playSound(filename, category, name, tile);
+      }
+
+      // Play sound on connected clients
+      async function playSound(filename, category, name, tileElement) {
+        try {
+          // Visual feedback
+          tileElement.classList.add("playing");
+          showToast(`Playing: ${name}`);
+
+          // Send to server with username
+          const response = await fetch(`${SERVER_URL}/send-message`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              type: "play-sound",
+              message: `Playing ${name}`,
+              category: category,
+              filename: filename,
+              name: name,
+              username: currentUsername,
+              channel: "default",
+            }),
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            // Update stats
+            playCount++;
+            updateStats();
+
+            // Add to recently played
+            const key = `${category}:${filename}`;
+            recentlyPlayed = recentlyPlayed.filter((k) => k !== key);
+            recentlyPlayed.unshift(key);
+            if (recentlyPlayed.length > 20) {
+              recentlyPlayed = recentlyPlayed.slice(0, 20);
+            }
+
+            // Refresh play history
+            await loadPlayHistory();
+
+            // Remove playing animation after 2 seconds
+            setTimeout(() => {
+              tileElement.classList.remove("playing");
+            }, 2000);
+          } else {
+            throw new Error(result.message || "Failed to send sound");
+          }
+        } catch (error) {
+          console.error("Error playing sound:", error);
+          showToast("Failed to play sound", "error");
+          tileElement.classList.remove("playing");
+        }
+      }
+
+      // Render tiles based on current filter and search
+      function renderTiles() {
+        const tilesGrid = document.getElementById("tilesGrid");
+        const noResults = document.getElementById("noResults");
+
+        if (!tilesGrid) return;
+
+        const filteredTiles = getFilteredTiles();
+
+        if (filteredTiles.length === 0) {
+          tilesGrid.style.display = "none";
+          if (noResults) noResults.style.display = "block";
+          return;
         }
 
-        // Play sound on connected clients
-        async function playSound(filename, category, name, tileElement) {
-            try {
-                // Visual feedback
-                tileElement.classList.add('playing');
-                showToast(`Playing: ${name}`);
+        tilesGrid.style.display = "grid";
+        if (noResults) noResults.style.display = "none";
 
-                // Send to server with username
-                const response = await fetch(`${SERVER_URL}/send-message`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        type: 'play-sound',
-                        message: `Playing ${name}`,
-                        category: category,
-                        filename: filename,
-                        name: name,
-                        username: currentUsername,
-                        channel: 'default'
-                    })
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    // Update stats
-                    playCount++;
-                    updateStats();
-
-                    // Add to recently played
-                    const key = `${category}:${filename}`;
-                    recentlyPlayed = recentlyPlayed.filter(k => k !== key);
-                    recentlyPlayed.unshift(key);
-                    if (recentlyPlayed.length > 20) {
-                        recentlyPlayed = recentlyPlayed.slice(0, 20);
-                    }
-
-                    // Refresh play history
-                    await loadPlayHistory();
-
-                    // Remove playing animation after 2 seconds
-                    setTimeout(() => {
-                        tileElement.classList.remove('playing');
-                    }, 2000);
-                } else {
-                    throw new Error(result.message || 'Failed to send sound');
-                }
-            } catch (error) {
-                console.error('Error playing sound:', error);
-                showToast('Failed to play sound', 'error');
-                tileElement.classList.remove('playing');
-            }
-        }
-
-        // Render tiles based on current filter and search
-        function renderTiles() {
-            const tilesGrid = document.getElementById('tilesGrid');
-            const noResults = document.getElementById('noResults');
-
-            if (!tilesGrid) return;
-
-            const filteredTiles = getFilteredTiles();
-
-            if (filteredTiles.length === 0) {
-                tilesGrid.style.display = 'none';
-                if (noResults) noResults.style.display = 'block';
-                return;
-            }
-
-            tilesGrid.style.display = 'grid';
-            if (noResults) noResults.style.display = 'none';
-
-            tilesGrid.innerHTML = filteredTiles.map((tile, index) => {
-              const shortcutKey = index < 9 ? (index + 1).toString() : null;
-                return `
+        tilesGrid.innerHTML = filteredTiles
+          .map((tile, index) => {
+            const shortcutKey = index < 9 ? (index + 1).toString() : null;
+            return `
                 <div class="sound-tile"
                      data-filename="${tile.filename}"
                      data-category="${tile.category}"
                      data-name="${tile.name}"
-                     data-shortcut="${shortcutKey || ''}">
+                     data-shortcut="${shortcutKey || ""}">
                     <div class="icon">🎵</div>
                     <div class="name">${tile.name}</div>
                     <div class="filename">${tile.filename}</div>
                     <div class="play-indicator">▶</div>
-                    ${shortcutKey ? `<div class="shortcut-badge">${shortcutKey}</div>` : ''}
+                    ${shortcutKey ? `<div class="shortcut-badge">${shortcutKey}</div>` : ""}
                 </div>
             `;
-            }).join('');
+          })
+          .join("");
+      }
+
+      // Get filtered tiles based on current filter and search
+      function getFilteredTiles() {
+        let tiles = [...allTiles];
+
+        // Apply filter
+        if (currentFilter !== "all") {
+          if (currentFilter === "recent") {
+            tiles = tiles.filter((t) => {
+              const key = `${t.category}:${t.filename}`;
+              return recentlyPlayed.includes(key);
+            });
+          } else {
+            // Category filter
+            tiles = tiles.filter((t) => t.category === currentFilter);
+          }
         }
 
-        // Get filtered tiles based on current filter and search
-        function getFilteredTiles() {
-            let tiles = [...allTiles];
-
-            // Apply filter
-            if (currentFilter !== 'all') {
-                if (currentFilter === 'recent') {
-                    tiles = tiles.filter(t => {
-                        const key = `${t.category}:${t.filename}`;
-                        return recentlyPlayed.includes(key);
-                    });
-                } else {
-                    // Category filter
-                    tiles = tiles.filter(t => t.category === currentFilter);
-                }
-            }
-
-            // Apply search
-            if (searchTerm) {
-                const search = searchTerm.toLowerCase();
-                tiles = tiles.filter(t =>
-                    t.name.toLowerCase().includes(search) ||
-                    t.filename.toLowerCase().includes(search)
-                );
-            }
-
-            return tiles;
+        // Apply search
+        if (searchTerm) {
+          const search = searchTerm.toLowerCase();
+          tiles = tiles.filter(
+            (t) =>
+              t.name.toLowerCase().includes(search) ||
+              t.filename.toLowerCase().includes(search),
+          );
         }
 
-        // Check server status
-        async function checkServerStatus() {
-            const statusIndicator = document.getElementById('statusIndicator');
-            const statusText = document.getElementById('statusText');
+        return tiles;
+      }
 
-            try {
-                const response = await fetch(`${SERVER_URL}/health`);
+      // Check server status
+      async function checkServerStatus() {
+        const statusIndicator = document.getElementById("statusIndicator");
+        const statusText = document.getElementById("statusText");
 
-                if (response.ok) {
-                    const data = await response.json();
-                    if (statusIndicator) statusIndicator.classList.add('online');
-                    if (statusText) statusText.textContent = `Server Online (${data.websocket.totalClients} clients)`;
-                } else {
-                    throw new Error('Server not responding');
-                }
-            } catch (error) {
-                if (statusIndicator) statusIndicator.classList.remove('online');
-                if (statusText) statusText.textContent = 'Server Offline';
-            }
+        try {
+          const response = await fetch(`${SERVER_URL}/health`);
+
+          if (response.ok) {
+            const data = await response.json();
+            if (statusIndicator) statusIndicator.classList.add("online");
+            if (statusText)
+              statusText.textContent = `Server Online (${data.websocket.totalClients} clients)`;
+          } else {
+            throw new Error("Server not responding");
+          }
+        } catch (error) {
+          if (statusIndicator) statusIndicator.classList.remove("online");
+          if (statusText) statusText.textContent = "Server Offline";
+        }
+      }
+
+      // Update statistics
+      function updateStats() {
+        const totalSounds = document.getElementById("totalSounds");
+        const playCountEl = document.getElementById("playCount");
+        const recentCount = document.getElementById("recentCount");
+
+        if (totalSounds) totalSounds.textContent = allTiles.length;
+        if (playCountEl) playCountEl.textContent = playCount;
+        if (recentCount) recentCount.textContent = recentlyPlayed.length;
+      }
+
+      // Show/hide loading overlay
+      function showLoading(show) {
+        const overlay = document.getElementById("loadingOverlay");
+        if (overlay) {
+          if (show) {
+            overlay.classList.add("show");
+          } else {
+            overlay.classList.remove("show");
+          }
+        }
+      }
+
+      // Show toast notification
+      function showToast(message, type = "success") {
+        const toast = document.getElementById("toast");
+        if (!toast) return;
+
+        toast.textContent = message;
+        toast.className = `toast show ${type}`;
+
+        setTimeout(() => {
+          toast.classList.remove("show");
+        }, 3000);
+      }
+
+      // Load play history from server
+      async function loadPlayHistory() {
+        if (!currentUsername) return;
+
+        try {
+          // Load user's history
+          const userResponse = await fetch(
+            `${SERVER_URL}/play-history/${encodeURIComponent(currentUsername)}`,
+          );
+          const userData = await userResponse.json();
+
+          if (userData.success) {
+            userPlayHistory = userData.history || [];
+          }
+
+          // Load all history
+          const allResponse = await fetch(
+            `${SERVER_URL}/play-history?limit=50`,
+          );
+          const allData = await allResponse.json();
+
+          if (allData.success) {
+            allPlayHistory = allData.history || [];
+          }
+
+          renderPlayHistory();
+
+          // Show play history section if there's any history
+          const historySection = document.getElementById("playHistorySection");
+          if (
+            historySection &&
+            (userPlayHistory.length > 0 || allPlayHistory.length > 0)
+          ) {
+            historySection.style.display = "block";
+          }
+        } catch (error) {
+          console.warn("Could not load play history:", error);
+        }
+      }
+
+      // Render play history
+      function renderPlayHistory() {
+        renderUserHistory();
+        renderAllHistory();
+      }
+
+      // Render user history
+      function renderUserHistory() {
+        const userHistoryList = document.getElementById("userHistoryList");
+        if (!userHistoryList) return;
+
+        if (userPlayHistory.length === 0) {
+          userHistoryList.innerHTML =
+            '<div class="history-empty">No play history yet. Start playing some sounds!</div>';
+          return;
         }
 
-        // Update statistics
-        function updateStats() {
-            const totalSounds = document.getElementById('totalSounds');
-            const playCountEl = document.getElementById('playCount');
-            const recentCount = document.getElementById('recentCount');
+        userHistoryList.innerHTML = userPlayHistory
+          .map((item) => {
+            const timestamp = new Date(item.timestamp);
+            const timeAgo = getTimeAgo(timestamp);
 
-            if (totalSounds) totalSounds.textContent = allTiles.length;
-            if (playCountEl) playCountEl.textContent = playCount;
-            if (recentCount) recentCount.textContent = recentlyPlayed.length;
-        }
-
-        // Show/hide loading overlay
-        function showLoading(show) {
-            const overlay = document.getElementById('loadingOverlay');
-            if (overlay) {
-                if (show) {
-                    overlay.classList.add('show');
-                } else {
-                    overlay.classList.remove('show');
-                }
-            }
-        }
-
-        // Show toast notification
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            if (!toast) return;
-
-            toast.textContent = message;
-            toast.className = `toast show ${type}`;
-
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
-
-        // Load play history from server
-        async function loadPlayHistory() {
-            if (!currentUsername) return;
-
-            try {
-                // Load user's history
-                const userResponse = await fetch(`${SERVER_URL}/play-history/${encodeURIComponent(currentUsername)}`);
-                const userData = await userResponse.json();
-
-                if (userData.success) {
-                    userPlayHistory = userData.history || [];
-                }
-
-                // Load all history
-                const allResponse = await fetch(`${SERVER_URL}/play-history?limit=50`);
-                const allData = await allResponse.json();
-
-                if (allData.success) {
-                    allPlayHistory = allData.history || [];
-                }
-
-                renderPlayHistory();
-
-                // Show play history section if there's any history
-                const historySection = document.getElementById('playHistorySection');
-                if (historySection && (userPlayHistory.length > 0 || allPlayHistory.length > 0)) {
-                    historySection.style.display = 'block';
-                }
-            } catch (error) {
-                console.warn('Could not load play history:', error);
-            }
-        }
-
-        // Render play history
-        function renderPlayHistory() {
-            renderUserHistory();
-            renderAllHistory();
-        }
-
-        // Render user history
-        function renderUserHistory() {
-            const userHistoryList = document.getElementById('userHistoryList');
-            if (!userHistoryList) return;
-
-            if (userPlayHistory.length === 0) {
-                userHistoryList.innerHTML = '<div class="history-empty">No play history yet. Start playing some sounds!</div>';
-                return;
-            }
-
-            userHistoryList.innerHTML = userPlayHistory.map(item => {
-                const timestamp = new Date(item.timestamp);
-                const timeAgo = getTimeAgo(timestamp);
-
-                return `
+            return `
                     <div class="history-item">
                         <div class="icon">🎵</div>
                         <div class="details">
@@ -1117,24 +1180,27 @@
                         <div class="timestamp">${timeAgo}</div>
                     </div>
                 `;
-            }).join('');
+          })
+          .join("");
+      }
+
+      // Render all history
+      function renderAllHistory() {
+        const allHistoryList = document.getElementById("allHistoryList");
+        if (!allHistoryList) return;
+
+        if (allPlayHistory.length === 0) {
+          allHistoryList.innerHTML =
+            '<div class="history-empty">No activity yet!</div>';
+          return;
         }
 
-        // Render all history
-        function renderAllHistory() {
-            const allHistoryList = document.getElementById('allHistoryList');
-            if (!allHistoryList) return;
+        allHistoryList.innerHTML = allPlayHistory
+          .map((item) => {
+            const timestamp = new Date(item.timestamp);
+            const timeAgo = getTimeAgo(timestamp);
 
-            if (allPlayHistory.length === 0) {
-                allHistoryList.innerHTML = '<div class="history-empty">No activity yet!</div>';
-                return;
-            }
-
-            allHistoryList.innerHTML = allPlayHistory.map(item => {
-                const timestamp = new Date(item.timestamp);
-                const timeAgo = getTimeAgo(timestamp);
-
-                return `
+            return `
                     <div class="history-item">
                         <div class="icon">🎵</div>
                         <div class="details">
@@ -1148,119 +1214,124 @@
                         <div class="timestamp">${timeAgo}</div>
                     </div>
                 `;
-            }).join('');
-        }
+          })
+          .join("");
+      }
 
-        // Get time ago string
-        function getTimeAgo(date) {
-            const now = new Date();
-            const diffMs = now - date;
-            const diffSeconds = Math.floor(diffMs / 1000);
-            const diffMinutes = Math.floor(diffSeconds / 60);
-            const diffHours = Math.floor(diffMinutes / 60);
-            const diffDays = Math.floor(diffHours / 24);
+      // Get time ago string
+      function getTimeAgo(date) {
+        const now = new Date();
+        const diffMs = now - date;
+        const diffSeconds = Math.floor(diffMs / 1000);
+        const diffMinutes = Math.floor(diffSeconds / 60);
+        const diffHours = Math.floor(diffMinutes / 60);
+        const diffDays = Math.floor(diffHours / 24);
 
-            if (diffSeconds < 60) {
-                return 'just now';
-            } else if (diffMinutes < 60) {
-                return `${diffMinutes}m ago`;
-            } else if (diffHours < 24) {
-                return `${diffHours}h ago`;
-            } else if (diffDays < 30) {
-                return `${diffDays}d ago`;
-            } else {
-                return date.toLocaleDateString();
-            }
-        }
-
-        // Update username display
-        function updateUsernameDisplay() {
-            const usernameDisplay = document.getElementById('usernameDisplay');
-            const usernameText = document.getElementById('currentUsernameText');
-
-            if (currentUsername && usernameDisplay && usernameText) {
-                usernameText.textContent = currentUsername;
-                usernameDisplay.style.display = 'flex';
-            }
-        }
-
-        // Change username function
-        async function changeUsername() {
-            const newUsername = prompt('Enter new username:', currentUsername);
-            if (newUsername && newUsername.trim() !== '' && newUsername.trim() !== currentUsername) {
-                currentUsername = newUsername.trim();
-                localStorage.setItem('soundCompanionUsername', currentUsername);
-                updateUsernameDisplay();
-                showToast(`Username changed to: ${currentUsername}`);
-
-                // Reload play history for new user
-                await loadPlayHistory();
-            }
-        }
-
-        // Setup WebSocket listener for real-time updates
-        function setupWebSocketListener() {
-            // Create WebSocket connection for real-time updates
-            const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsUrl = `${wsProtocol}//${window.location.host}/ws?channel=default&clientId=sender-${Date.now()}`;
-
-            try {
-                const ws = new WebSocket(wsUrl);
-
-                ws.onmessage = async (event) => {
-                    try {
-                        const data = JSON.parse(event.data);
-
-                        // If someone played a sound, refresh the history
-                        if (data.type === 'play-sound') {
-                            console.log('Sound played by someone, refreshing history...');
-                            await loadPlayHistory();
-                        }
-                    } catch (error) {
-                        console.warn('Error parsing WebSocket message:', error);
-                    }
-                };
-
-                ws.onopen = () => {
-                    console.log('WebSocket connected for real-time updates');
-                };
-
-                ws.onclose = () => {
-                    console.log('WebSocket disconnected, attempting to reconnect...');
-                    // Reconnect after 3 seconds
-                    setTimeout(setupWebSocketListener, 3000);
-                };
-
-                ws.onerror = (error) => {
-                    console.warn('WebSocket error:', error);
-                };
-
-            } catch (error) {
-                console.warn('Failed to setup WebSocket listener:', error);
-            }
-        }
-
-        // Fetch and update version from API endpoint
-        async function loadVersion() {
-            try {
-                const response = await fetch('/api/version');
-                const data = await response.json();
-                document.getElementById('version').textContent = data.version;
-            } catch (error) {
-                console.warn('Could not load version:', error);
-            }
-        }
-
-        // Start the application when DOM is ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => {
-                loadVersion();
-                init();
-            });
+        if (diffSeconds < 60) {
+          return "just now";
+        } else if (diffMinutes < 60) {
+          return `${diffMinutes}m ago`;
+        } else if (diffHours < 24) {
+          return `${diffHours}h ago`;
+        } else if (diffDays < 30) {
+          return `${diffDays}d ago`;
         } else {
-            loadVersion();
-            init();
+          return date.toLocaleDateString();
         }
+      }
+
+      // Update username display
+      function updateUsernameDisplay() {
+        const usernameDisplay = document.getElementById("usernameDisplay");
+        const usernameText = document.getElementById("currentUsernameText");
+
+        if (currentUsername && usernameDisplay && usernameText) {
+          usernameText.textContent = currentUsername;
+          usernameDisplay.style.display = "flex";
+        }
+      }
+
+      // Change username function
+      async function changeUsername() {
+        const newUsername = prompt("Enter new username:", currentUsername);
+        if (
+          newUsername &&
+          newUsername.trim() !== "" &&
+          newUsername.trim() !== currentUsername
+        ) {
+          currentUsername = newUsername.trim();
+          localStorage.setItem("soundCompanionUsername", currentUsername);
+          updateUsernameDisplay();
+          showToast(`Username changed to: ${currentUsername}`);
+
+          // Reload play history for new user
+          await loadPlayHistory();
+        }
+      }
+
+      // Setup WebSocket listener for real-time updates
+      function setupWebSocketListener() {
+        // Create WebSocket connection for real-time updates
+        const wsProtocol =
+          window.location.protocol === "https:" ? "wss:" : "ws:";
+        const wsUrl = `${wsProtocol}//${window.location.host}/ws?channel=default&clientId=sender-${Date.now()}`;
+
+        try {
+          const ws = new WebSocket(wsUrl);
+
+          ws.onmessage = async (event) => {
+            try {
+              const data = JSON.parse(event.data);
+
+              // If someone played a sound, refresh the history
+              if (data.type === "play-sound") {
+                console.log("Sound played by someone, refreshing history...");
+                await loadPlayHistory();
+              }
+            } catch (error) {
+              console.warn("Error parsing WebSocket message:", error);
+            }
+          };
+
+          ws.onopen = () => {
+            console.log("WebSocket connected for real-time updates");
+          };
+
+          ws.onclose = () => {
+            console.log("WebSocket disconnected, attempting to reconnect...");
+            // Reconnect after 3 seconds
+            setTimeout(setupWebSocketListener, 3000);
+          };
+
+          ws.onerror = (error) => {
+            console.warn("WebSocket error:", error);
+          };
+        } catch (error) {
+          console.warn("Failed to setup WebSocket listener:", error);
+        }
+      }
+
+      // Fetch and update version from API endpoint
+      async function loadVersion() {
+        try {
+          const response = await fetch("/api/version");
+          const data = await response.json();
+          document.getElementById("version").textContent = data.version;
+        } catch (error) {
+          console.warn("Could not load version:", error);
+        }
+      }
+
+      // Start the application when DOM is ready
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", () => {
+          loadVersion();
+          init();
+        });
+      } else {
+        loadVersion();
+        init();
+      }
     </script>
-</body>
+  </body>
 </html>

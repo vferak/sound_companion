@@ -11,6 +11,7 @@ Sound Companion lets you remotely control audio playback across office machines 
 ### The Magic of Vibe Coding
 
 A little vibe coding, a tiny runtime, and one clean deployment pipeline are all it takes to move an idea from sketch to production. Combine:
+
 - 🎵 Thoughtfully timed audio
 - 💻 Minimal, focused engineering
 - ☁️ rock8.cloud for fast deployment
@@ -66,43 +67,50 @@ A neat side effect: when many listener clients connect to the same sender, you g
 - The result is an office-wide, multi-device soundscape — effectively using everyone’s laptops as a combined speaker system.
 
 Why this is cool:
+
 - You can create synchronized reactions and immersive audio moments across the room without any extra configuration.
 - It’s simple — just open the sender on one machine and listeners on others; they all connect to the same WebSocket server.
 - It supports scenarios from lighthearted pranks to coordinated alerts.
 
 How to set it up:
+
 1. Open the Sender Dashboard: `/public/sender.html`
 2. Open the Listener Client on each laptop: `/public/websocket-client.html`
 3. All clients connect to the WebSocket endpoint (e.g., `ws://your-server:3700/ws`)
 4. Trigger a sound from the sender — all connected listeners play it
 
 Notes:
+
 - WebSocket timing is good but not guaranteed to be sample-perfect across many devices; results are impressive for office use, but don't expect studio-grade sync.
 - Network latency and client audio buffer behavior will affect perceived synchronization.
 
 ## 📸 Screenshots (using local images)
 
 ### Listener Client — The Receiver
-*Route: `/public/websocket-client.html`*
+
+_Route: `/public/websocket-client.html`_
 
 ![Listener Client](./client.png)
 
 This is the minimal listener UI that people open on their laptops. It shows connection status, the current "now playing" card, and a realtime activity log so you can see when sounds were triggered.
 
 Key bits:
+
 - Connection indicator (CONNECTED / DISCONNECTED)
 - Now playing area with artwork/placeholder
 - Activity log with timestamps
 - Connect / Disconnect controls
 
 ### Sender Dashboard — The Control Center
-*Route: `/public/sender.html`*
+
+_Route: `/public/sender.html`_
 
 ![Sender Dashboard](./sender.png)
 
 This is your control panel: a searchable library of sounds, category filters, usage stats, and a single click to broadcast audio to every connected listener.
 
 Key bits:
+
 - Sound library with categories (e.g., Jolanda, Lakatoš)
 - Search and filters (All / Recent / Favorites)
 - Statistics (total sounds, played, recent)
@@ -140,4 +148,4 @@ Inspired by and built with gratitude to **[soundboardio](https://github.com/soun
 
 ---
 
-*Use responsibly. Or don't. We won't stop you.*
+_Use responsibly. Or don't. We won't stop you._
