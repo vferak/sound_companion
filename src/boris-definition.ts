@@ -1,4 +1,4 @@
-export const voicemodDefinitions = {
+export const borisDefinitions = {
   name: "Boris-webserver",
   shortName: "Boris",
   description: "-",
@@ -6,7 +6,7 @@ export const voicemodDefinitions = {
   lang: "cs",
   version: "1.0.0",
   color: "#0e3f88ff",
-  rootUrl: "https://wailord.org/assets/audio",
+  rootUrl: "https://wailord.org/assets/audio/",
   author: {
     name: "Boris",
     url: "https://wailord.org",
