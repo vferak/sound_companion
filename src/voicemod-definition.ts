@@ -154,6 +154,14 @@ export const voicemodDefinitions = {
       name: "Ty Curaku!",
       filename: "593cec7d-33ed-4d1b-b62a-753910b82bd5-1675001715058.mp3",
     },
+    {
+      name: "Clarkson genious gravity",
+      filename: "24d80d36-8d26-495d-bb81-4c3e60f2efd2.mp3",
+    },
+      {
+      name: "Clarkson genious stagger myself",
+      filename: "35302292-d55a-412f-9f66-9e9e7c76fd03.mp3",
+    },
   ],
   references: [
     {
