@@ -158,9 +158,13 @@ export const voicemodDefinitions = {
       name: "Clarkson genious gravity",
       filename: "24d80d36-8d26-495d-bb81-4c3e60f2efd2.mp3",
     },
-      {
+    {
       name: "Clarkson genious stagger myself",
       filename: "35302292-d55a-412f-9f66-9e9e7c76fd03.mp3",
+    },
+    {
+      name: "SHUT UP",
+      filename: "b6e60510-2be1-48ab-a3cf-40b290744c27-1665364581653.mp3",
     },
   ],
   references: [
