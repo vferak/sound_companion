@@ -71,7 +71,6 @@ export const borisDefinitions = {
       name: "Sound 9",
       filename: "sound_9.mp3",
     }*/
-    ,
   ],
   references: [
     {
