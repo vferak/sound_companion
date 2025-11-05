@@ -155,12 +155,19 @@ export const voicemodDefinitions = {
       filename: "593cec7d-33ed-4d1b-b62a-753910b82bd5-1675001715058.mp3",
     },
     {
-      name: "Clarkson genious gravity",
+      name: "Clarkson genious frightening",
       filename: "24d80d36-8d26-495d-bb81-4c3e60f2efd2.mp3",
     },
     {
       name: "Clarkson genious stagger myself",
       filename: "35302292-d55a-412f-9f66-9e9e7c76fd03.mp3",
+    },    {
+      name: "debata zeman klaus basta",
+      filename: "6de435f2-d305-4421-8b86-215a702a23e9-1675269515129.mp3",
+    },
+      {
+      name: "sbohem a satecek",
+      filename: "0e3a6cbb-edb4-4689-ac8d-ffc58c44814e-1718294849932.mp3",
     },
     {
       name: "SHUT UP",
