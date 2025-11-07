@@ -31,6 +31,10 @@ export const voicemodDefinitions = {
   ],
   tiles: [
     {
+      name: "SKILL ISSUE",
+      filename: "8768d99d-0cde-4fd7-8250-3fd0c0d68f0d-1711781392229.mp3",
+    },
+    {
       name: "Accepting fate",
       filename: "3c687a4d-9137-4ea9-a247-2871b4a82c1c-1754854085649.mp3",
     },
