@@ -95,5 +95,9 @@ export const myInstantsDefinition = {
       name: "What the hellll",
       filename: "what-the-hellllllllllll.mp3",
     },
+    {
+      name: "Pussie",
+      filename: "pussie.mp3",
+    },
   ],
 };
