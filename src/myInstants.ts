@@ -58,6 +58,7 @@ export const myInstantsDefinition = {
     {
       name: "You got jebaited",
       filename: "jebaitedsoundboard.mp3",
+      volume: 0.5
     },
     {
       name: "Two thousands years later",
