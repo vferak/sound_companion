@@ -549,6 +549,7 @@
         }
 
         const audioUrl = definition.rootUrl + filename;
+        const audioVolume = definition.volume ?? 1;
         const soundName = filename.replace(".mp3", "").replace(/-/g, " ");
 
         try {
@@ -565,6 +566,7 @@
 
           // Play audio
           audioPlayer.src = audioUrl;
+          audioPlayer.volume = audioVolume;
           await audioPlayer.play();
           isPlaying = true;
 
