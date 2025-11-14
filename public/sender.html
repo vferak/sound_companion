@@ -919,12 +919,13 @@
         const filename = tile.dataset.filename;
         const category = tile.dataset.category;
         const name = tile.dataset.name;
+        const volume = Number(tile.dataset.volume);
 
-        await playSound(filename, category, name, tile);
+        await playSound(filename, category, name, tile, volume);
       }
 
       // Play sound on connected clients
-      async function playSound(filename, category, name, tileElement) {
+      async function playSound(filename, category, name, tileElement, volume) {
         try {
           // Visual feedback
           tileElement.classList.add("playing");
@@ -944,6 +945,7 @@
               name: name,
               username: currentUsername,
               channel: "default",
+              volume: volume,
             }),
           });
 
@@ -1005,7 +1007,8 @@
                      data-filename="${tile.filename}"
                      data-category="${tile.category}"
                      data-name="${tile.name}"
-                     data-shortcut="${shortcutKey || ""}">
+                     data-shortcut="${shortcutKey || ""}"
+                     data-volume="${tile.volume || 1}">
                     <div class="icon">🎵</div>
                     <div class="name">${tile.name}</div>
                     <div class="filename">${tile.filename}</div>
