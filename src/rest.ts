@@ -74,6 +74,7 @@ export const rest = new Elysia()
         ...(body.filename && { filename: body.filename }),
         ...(body.username && { username: body.username }),
         ...(body.name && { name: body.name }),
+        ...(body.volume && { volume: body.volume }),
       };
 
       console.log("📤 MESSAGE DATA TO BROADCAST:");
@@ -136,6 +137,7 @@ export const rest = new Elysia()
         category: t.Optional(t.String()),
         filename: t.Optional(t.String()),
         data: t.Optional(t.Any()),
+        volume: t.Optional(t.Number()),
       }),
     },
   )

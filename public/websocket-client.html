@@ -491,7 +491,7 @@
 
               // Check if this is an audio play message
               if (data.category && data.filename) {
-                await playSound(data.category, data.filename);
+                await playSound(data.category, data.filename, data.volume);
               } else if (data.type === "connection") {
                 // Handle connection confirmation
                 addMessage(`Server: ${data.message}`);
@@ -534,7 +534,7 @@
           status.charAt(0).toUpperCase() + status.slice(1);
       }
 
-      async function playSound(category, filename) {
+      async function playSound(category, filename, volume) {
         const definition = soundDefinitions[category];
 
         if (!definition || !definition.rootUrl || !definition.name) {
@@ -549,7 +549,6 @@
         }
 
         const audioUrl = definition.rootUrl + filename;
-        const audioVolume = definition.volume ?? 1;
         const soundName = filename.replace(".mp3", "").replace(/-/g, " ");
 
         try {
@@ -566,7 +565,7 @@
 
           // Play audio
           audioPlayer.src = audioUrl;
-          audioPlayer.volume = audioVolume;
+          audioPlayer.volume = volume;
           await audioPlayer.play();
           isPlaying = true;
 
