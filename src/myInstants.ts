@@ -100,5 +100,41 @@ export const myInstantsDefinition = {
       name: "Pussie",
       filename: "pussie.mp3",
     },
+    {
+      name: "Indian Christmas",
+      filename: "indian-christmas-2-0.mp3",
+    },
+    {
+      name: "Indian jingle ringle",
+      filename: "smth-73.mp3",
+    },
+    {
+      name: "Let it go",
+      filename: "letitgoo.mp3",
+    },
+    {
+      name: "Ho ho ho merry christmas",
+      filename: "ho-ho-ho-merry-christmas.mp3",
+    },
+    {
+      name: "Fuck you, nice christmas",
+      filename: "hope-your-family-has-a-nice-christmas.mp3",
+    },
+    {
+      name: "Stoned for Christmas",
+      filename: "ill-be-stoned-for-christmas.mp3",
+    },
+    {
+      name: "Why so jolly?",
+      filename: "why-so-jolly.mp3",
+    },
+    {
+      name: "Feliz Navidad",
+      filename: "feliz-navidad.mp3",
+    },
+    {
+      name: "Christmas",
+      filename: "mariah-carey-christmas.mp3",
+    },
   ],
 };
