@@ -97,6 +97,10 @@ export const lakatosDefinition = {
       filename: "kurva.mp3",
     },
     {
+      name: "Kurvy slovenské!",
+      filename: "kurvy-slovenske.mp3",
+    },
+    {
       name: "Ne, nenasadíš ho",
       filename: "ne-nenasadis-ho.mp3",
     },
