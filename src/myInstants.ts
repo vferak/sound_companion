@@ -136,5 +136,13 @@ export const myInstantsDefinition = {
       name: "Christmas",
       filename: "mariah-carey-christmas.mp3",
     },
+    {
+      name: "Ba Ba Banana",
+      filename: "ba-ba-ba-banana-minion.mp3",
+    },
+    {
+      name: "Coconut Song",
+      filename: "coconut-song.mp3",
+    },
   ],
 };
