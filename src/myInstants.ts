@@ -138,7 +138,7 @@ export const myInstantsDefinition = {
     },
     {
       name: "Ba Ba Banana",
-      filename: "ba-ba-ba-banana-minion.mp3",
+      filename: "banana-song2.mp3",
     },
     {
       name: "Coconut Song",
