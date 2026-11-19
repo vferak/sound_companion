@@ -425,6 +425,7 @@
       let ws = null;
       let reconnectTimeout = null;
       let isPlaying = false;
+      let playQueue = [];
       let wakeLock = null;
       const messageHistory = [];
 
@@ -548,6 +549,22 @@
           return;
         }
 
+        // Queue the sound; it plays once the current sound finishes
+        playQueue.push({ category, filename, volume, definition });
+        addMessage(`Queued: ${filename.replace(".mp3", "").replace(/-/g, " ")} (${definition.name})`);
+
+        if (!isPlaying) {
+          playNextInQueue();
+        }
+      }
+
+      async function playNextInQueue() {
+        const next = playQueue.shift();
+        if (!next) {
+          return;
+        }
+        const { category, filename, volume, definition } = next;
+
         const audioUrl = definition.rootUrl + filename;
         const soundName = filename.replace(".mp3", "").replace(/-/g, " ");
 
@@ -569,16 +586,19 @@
           await audioPlayer.play();
           isPlaying = true;
 
-          // Handle audio end
+          // Handle audio end — start the next queued sound, if any
           audioPlayer.onended = () => {
             isPlaying = false;
             visualizer.querySelectorAll(".audio-bar").forEach((bar) => {
               bar.classList.remove("playing");
             });
-            nowPlayingTitle.innerHTML =
-              '<span class="waiting">Waiting for audio...</span>';
-            nowPlayingCategory.textContent = "";
             addMessage(`Finished playing: ${soundName}`);
+            playNextInQueue();
+            if (!isPlaying) {
+              nowPlayingTitle.innerHTML =
+                '<span class="waiting">Waiting for audio...</span>';
+              nowPlayingCategory.textContent = "";
+            }
           };
         } catch (error) {
           console.error("Failed to play sound:", error);
@@ -587,6 +607,7 @@
           visualizer.querySelectorAll(".audio-bar").forEach((bar) => {
             bar.classList.remove("playing");
           });
+          playNextInQueue();
         }
       }
 
