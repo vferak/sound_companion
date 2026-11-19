@@ -492,7 +492,12 @@
 
               // Check if this is an audio play message
               if (data.category && data.filename) {
-                await playSound(data.category, data.filename, data.volume);
+                await playSound(
+                  data.category,
+                  data.filename,
+                  data.volume,
+                  data.username,
+                );
               } else if (data.type === "connection") {
                 // Handle connection confirmation
                 addMessage(`Server: ${data.message}`);
@@ -535,7 +540,7 @@
           status.charAt(0).toUpperCase() + status.slice(1);
       }
 
-      async function playSound(category, filename, volume) {
+      async function playSound(category, filename, volume, username) {
         const definition = soundDefinitions[category];
 
         if (!definition || !definition.rootUrl || !definition.name) {
@@ -549,8 +554,26 @@
           return;
         }
 
+        // Enforce a maximum of 3 queued sounds per user
+        const user = username || "anonymous";
+        const userQueueCount = playQueue.filter(
+          (item) => item.username === user,
+        ).length;
+        if (userQueueCount >= 3) {
+          console.warn(
+            `Queue limit reached for user "${user}": dropping ${filename}`,
+          );
+          addMessage(
+            `Queue limit reached for user "${user}" — skipping: ${filename
+              .replace(".mp3", "")
+              .replace(/-/g, " ")} (${definition.name})`,
+            true,
+          );
+          return;
+        }
+
         // Queue the sound; it plays once the current sound finishes
-        playQueue.push({ category, filename, volume, definition });
+        playQueue.push({ category, filename, volume, definition, username: user });
         addMessage(`Queued: ${filename.replace(".mp3", "").replace(/-/g, " ")} (${definition.name})`);
 
         if (!isPlaying) {
