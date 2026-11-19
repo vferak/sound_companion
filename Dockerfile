@@ -13,8 +13,13 @@ COPY src ./src
 COPY public ./public
 COPY tsconfig.json ./
 
-# Expose port (adjust if your app uses a different port)
+# Create directory for SQLite database (writable by the app user)
+RUN mkdir -p /app/data && \
+    chown -R bun:bun /app
+
+# Run as non-root user
+USER bun
+
 EXPOSE 3700
 
-# Run the application
 CMD ["bun", "run", "start"]
